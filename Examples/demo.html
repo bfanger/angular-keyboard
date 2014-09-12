@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html ng-app="demo">
+    <head>
+        <title>NG ListView - Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://bootswatch.com/readable/bootstrap.css">
+        <style>
+            .lv-active {
+                outline-color: -webkit-focus-ring-color;
+                outline-style: auto;
+                outline-width: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>NG ListView - Demo</h1>
+            <dl class="dl-horizontal">
+                <dt>Selected: </dt><dd>{{list.selected}}</dd>
+            </dl>
+            <table lv-list lv-selected="list.selected" class="table table-bordered table-condensed"> 
+                <thead>
+                    <tr>
+                        <td>Items</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr lv-item="item" ng-repeat="item in items" lv-selected-class="info">
+                        <td>{{item.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/0.7.2/MinFaker.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+
+        <script src="../src/ng-listview.js"></script>
+        <script>
+            var demo = angular.module('demo', ['listview']);
+            demo.run(function ($rootScope) {
+                $rootScope.items = [];
+                for (var i = 0; i < 20; i++) {
+                    $rootScope.items.push({
+                        name: Faker.Name.findName()
+                    });
+                }
+                $rootScope.list = {
+                    selected: $rootScope.items[3]
+                };
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "ng-listview",
+  "version": "0.0.0",
+  "authors": [
+    "Bob Fanger <bfanger@gmail.com>"
+  ],
+  "description": "ListView for AngularJS",
+  "main": "src/ng-listview.js",
+  "keywords": [
+    "angular",
+    "listview",
+    "keyboard"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "angular": "~1.*"
+  }
+}
