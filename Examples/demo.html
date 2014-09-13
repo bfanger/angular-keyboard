@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://bootswatch.com/readable/bootstrap.css">
         <style>
-            .lv-active {
+            .lv-focus {
                 outline-color: -webkit-focus-ring-color;
                 outline-style: auto;
                 outline-width: 5px;
@@ -15,22 +15,30 @@
     <body>
         <div class="container">
             <h1>NG ListView - Demo</h1>
-            <dl class="dl-horizontal">
-                <dt>Selected: </dt><dd>{{list.selected}}</dd>
-            </dl>
-            <table lv-list lv-selected="list.selected" class="table table-bordered table-condensed"> 
-                <thead>
-                    <tr>
-                        <td>Items</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr lv-item="item" ng-repeat="item in items" lv-selected-class="info">
-                        <td>{{item.name}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col-md-4" ng-repeat="mode in ['list', 'select', 'multiselect']">
+                    <dl class="dl-horizontal">
+                        <dt>Mode</dt><dd>{{mode}}</dd>
+                        <dt>Selected</dt><dd>{{list[mode].name|| list[mode].length}}</dd>
+                    </dl>
+                    <table lv-list="{{mode}}" ng-model="list[mode]" class="table table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <td>Items</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr lv-item="item" ng-repeat="item in items track by item.id" lv-selected-class="info">
+                                <td>{{item.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'readable' bootstrap theme.
         </div>
+
+
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/0.7.2/MinFaker.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
@@ -39,14 +47,18 @@
         <script>
             var demo = angular.module('demo', ['listview']);
             demo.run(function ($rootScope) {
-                $rootScope.items = [];
+                var items = [];
                 for (var i = 0; i < 20; i++) {
-                    $rootScope.items.push({
+                    items.push({
+                        id: i + 1,
                         name: Faker.Name.findName()
                     });
                 }
-                $rootScope.list = {
-                    selected: $rootScope.items[3]
+                $rootScope.items = items;
+                $rootScope.list2 = {
+                    list: items[3],
+                    select: items[2],
+                    multiselect: [items[0], items[1]]
                 };
             });
         </script>
