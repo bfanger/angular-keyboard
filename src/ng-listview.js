@@ -10,9 +10,12 @@
 angular.module('listview', []);
 angular.module('listview').constant('undefined');
 /**
+ * lv-list directive
  *
+ * Usage:
+ * <div lv-list ng-model="selection"> ... <div lv-item="aItem">...</div> ... </div>
  */
-angular.module('listview').directive('lvList', function (undefined) {
+angular.module('listview').directive('lvList', function (undefined, lvScroll) {
     'use strict';
 
     // Inject style
@@ -30,6 +33,7 @@ angular.module('listview').directive('lvList', function (undefined) {
         this.selected = undefined; // Selected model(s)
         this.active = undefined; // Model of the current list-item.
         this.focus = undefined; // Model of the current list-item and the listview is focussed.
+        this.scrollAnimated = true; // Always scroll animated, except on the focus event, because the browser already scrolled.
     }
     angular.extend(LvListController.prototype, {
         /** @lends LvListController */
@@ -58,6 +62,7 @@ angular.module('listview').directive('lvList', function (undefined) {
          * @param {*} model
          */
         deselect: function (model) {
+            this.active = model;
             if (this.mode === 'multiselect') {
                 var index = this.selected.indexOf(model);
                 if (index !== -1) {
@@ -69,7 +74,7 @@ angular.module('listview').directive('lvList', function (undefined) {
         },
         /**
          * Select or deselect the given model.
-         * Or in multiselect mode, add or remove the given model to the selection.
+         * Or in multiselect mode, adds or removes the given model to the selection.
          *
          * @param {*} model
          */
@@ -181,7 +186,7 @@ angular.module('listview').directive('lvList', function (undefined) {
             var ngModel = controllers[1];
             var hasFocus = false;
 
-            lvList.orientation = attrs.lvOrientation || 'vertical';
+            lvList.orientation = attrs.lvOrientation || 'detect';
             lvList.mode = attrs.lvList;
 
             ngModel.$render = function () {
@@ -202,13 +207,24 @@ angular.module('listview').directive('lvList', function (undefined) {
             if (angular.isUndefined(el.attr('tabindex'))) {
                 el.attr('tabindex', 0);
             }
-            el.on('focus', function () {
+            el.on('focus', function (e) {
                 if (angular.isUndefined(lvList.active)) {
                     lvList.active = lvList.first().model;
                 }
                 lvList.focus = lvList.active;
                 hasFocus = true;
+                if (lvList.orientation === 'detect') {
+                    var itemEl = lvList.first().element;
+                    if (itemEl) {
+                        lvList.orientation = 'vertical';
+                        if (itemEl.css('float') === 'left' || itemEl.css('display') === 'inline-block') {
+                            lvList.orientation = 'horizontal';
+                        }
+                    }
+                }
+                lvList.scrollAnimated = false;
                 $scope.$apply();
+                lvList.scrollAnimated = true;
             });
             el.on('blur', function () {
                 lvList.focus = null;
@@ -257,7 +273,7 @@ angular.module('listview').directive('lvList', function (undefined) {
 /**
  *
  */
-angular.module('listview').directive('lvItem', function ($animate, $parse) {
+angular.module('listview').directive('lvItem', function ($animate, $parse, lvScroll) {
     'use strict';
     return {
         controller: function ($scope, $element) {
@@ -307,10 +323,93 @@ angular.module('listview').directive('lvItem', function ($animate, $parse) {
             }, function (hasFocus) {
                 if (hasFocus) {
                     $animate.addClass(el, focusClass);
+                    lvScroll(el, {top: 0, right: 0, bottom: 0, left: 0}, lvList.scrollAnimated);
                 } else {
                     $animate.removeClass(el, focusClass);
                 }
             });
         }
     };
+});
+/**
+ * Helper for scrolling the active (and focussed) lv-item into a viewable area.
+ *
+ * @param {type} param1
+ * @param {type} param2
+ */
+angular.module('listview').factory('lvScroll', function ($log, $window, $timeout) {
+    var noop = angular.noop;
+
+    if (!angular.element.prototype.height) {
+        $log.warn('[ng-listview] Support for scrolling requires jQuery');
+        return noop;
+    }
+    var duration = 150;
+    /**
+     *
+     * @param {jQElement} el
+     * @param {Object} offset  Allow offsets
+     * @param {Boolean} animated
+     * @returns {Function} cancel animation
+     */
+    function _lvScroll(el, offset, animated) {
+        var pos = el.position();
+        pos.height = el.outerHeight();
+        pos.bottom =  pos.top + pos.height;
+        var parent = el.offsetParent();
+        var parentPos = {
+            height: parent.outerHeight()
+        };
+//        console.log(el[0].nodeName, pos, parent[0].nodeName, parentPos);
+
+        // down?
+        offset.bottom += parentPos.height - pos.bottom;
+        if (pos.bottom > parentPos.height) {
+            console.log('inner scroll down', 'todo');
+        }
+        // up?
+        if  (pos.top < 0) {
+            console.log('inner scroll up', 'todo');
+        }
+        offset.top += pos.top;
+
+        if (parent.is('html')) {
+            if ($window.scrollY > offset.top) {
+                if (animated) {
+                    angular.element('html, body').animate({scrollTop: offset.top}, duration);
+                    return function () {
+                        angular.element('html, body').stop(true, true);
+                    };
+                }
+                $window.scrollTo($window.scrollY, offset.top);
+            } else {
+                var windowBottom = parentPos.height - $window.innerHeight - $window.scrollY;
+                if (offset.bottom < windowBottom) {
+                    if (animated) {
+                        angular.element('html, body').animate({scrollTop: $window.scrollY + windowBottom - offset.bottom}, duration);
+                        return function () {
+                            angular.element('html, body').stop(true, true);
+                        };
+                    }
+                    $window.scrollTo($window.scrollY, $window.scrollY + windowBottom - offset.bottom);
+                }
+            }
+            return noop;
+        }
+        return _lvScroll(parent, offset, animated);
+    }
+
+    var timer = null;
+    var cancelAnimation = noop;
+    function lvScroll(el, offset, animated) {
+        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated lv-item.
+        $timeout.cancel(timer);
+        cancelAnimation();
+        cancelAnimation = noop;
+        timer = $timeout(function () {
+            cancelAnimation = _lvScroll(el, offset, animated);
+        }, 10, false);
+    }
+
+    return lvScroll;
 });
