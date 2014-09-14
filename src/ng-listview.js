@@ -15,7 +15,7 @@ angular.module('listview').constant('undefined');
  * Usage:
  * <div lv-list ng-model="selection"> ... <div lv-item="aItem">...</div> ... </div>
  */
-angular.module('listview').directive('lvList', function (undefined, lvScroll) {
+angular.module('listview').directive('lvList', function (undefined) {
     'use strict';
 
     // Inject style
@@ -33,7 +33,7 @@ angular.module('listview').directive('lvList', function (undefined, lvScroll) {
         this.selected = undefined; // Selected model(s)
         this.active = undefined; // Model of the current list-item.
         this.focus = undefined; // Model of the current list-item and the listview is focussed.
-        this.scrollAnimated = true; // Always scroll animated, except on the focus event, because the browser already scrolled.
+        this.isFocusEvent = false; // Used to determine a the scroll delay, to prevent swallowed clicks
     }
     angular.extend(LvListController.prototype, {
         /** @lends LvListController */
@@ -208,6 +208,7 @@ angular.module('listview').directive('lvList', function (undefined, lvScroll) {
                 el.attr('tabindex', 0);
             }
             el.on('focus', function (e) {
+                lvList.isFocusEvent = true;
                 if (angular.isUndefined(lvList.active)) {
                     lvList.active = lvList.first().model;
                 }
@@ -222,9 +223,8 @@ angular.module('listview').directive('lvList', function (undefined, lvScroll) {
                         }
                     }
                 }
-                lvList.scrollAnimated = false;
                 $scope.$apply();
-                lvList.scrollAnimated = true;
+                lvList.isFocusEvent = false;
             });
             el.on('blur', function () {
                 lvList.focus = null;
@@ -273,8 +273,23 @@ angular.module('listview').directive('lvList', function (undefined, lvScroll) {
 /**
  *
  */
-angular.module('listview').directive('lvItem', function ($animate, $parse, lvScroll) {
+angular.module('listview').directive('lvItem', function ($animate, $parse, lvScrollTo, $timeout) {
     'use strict';
+    var timer = null;
+    var cancelAnimation = angular.noop;
+    function scrollTo(el, isFocusEvent) {
+        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated lv-item.
+        $timeout.cancel(timer);
+        if (isFocusEvent) {
+            timer = $timeout(function () {
+                cancelAnimation();
+                cancelAnimation = lvScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, false);
+            }, 100, false);
+        } else {
+            cancelAnimation();
+            cancelAnimation = lvScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, true);
+        }
+    }
     return {
         controller: function ($scope, $element) {
             this.getModel = (function () {
@@ -323,7 +338,7 @@ angular.module('listview').directive('lvItem', function ($animate, $parse, lvScr
             }, function (hasFocus) {
                 if (hasFocus) {
                     $animate.addClass(el, focusClass);
-                    lvScroll(el, {top: 0, right: 0, bottom: 0, left: 0}, lvList.scrollAnimated);
+                    scrollTo(el, lvList.isFocusEvent);
                 } else {
                     $animate.removeClass(el, focusClass);
                 }
@@ -337,79 +352,97 @@ angular.module('listview').directive('lvItem', function ($animate, $parse, lvScr
  * @param {type} param1
  * @param {type} param2
  */
-angular.module('listview').factory('lvScroll', function ($log, $window, $timeout) {
+angular.module('listview').factory('lvScrollTo', function ($log, $window) {
     var noop = angular.noop;
 
-    if (!angular.element.prototype.height) {
-        $log.warn('[ng-listview] Support for scrolling requires jQuery');
-        return noop;
-    }
     var duration = 150;
+    // Firefox scrollTop
+    var viewportNode = 'BODY';
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        viewportNode = 'HTML';
+    }
+
+    /**
+     * Change the scrollposition animated and return a function that cancels the animation
+     *
+     * @param {Element} container
+     * @param {String} property 'scrollTop' or 'scrollLeft'
+     * @param {Number} value
+     * @param {Boolean} animated
+     * @returns {Function}
+     */
+    function change(container, property, value, animated) {
+        if (animated && angular.element.prototype.animate) { // jQuery.animate is available?
+            var el = angular.element(container);
+            var props = {};
+            props[property] = value;
+            el.animate(props, duration);
+            return function () {
+                el.stop(true, true);
+            };
+        } else {
+            container[property] = value;
+            return noop;
+        }
+    }
+
     /**
      *
-     * @param {jQElement} el
-     * @param {Object} offset  Allow offsets
+     * @param {Element} el
+     * @param {Object} offset  Allowed hidden
      * @param {Boolean} animated
      * @returns {Function} cancel animation
      */
-    function _lvScroll(el, offset, animated) {
-        var pos = el.position();
-        pos.height = el.outerHeight();
-        pos.bottom =  pos.top + pos.height;
-        var parent = el.offsetParent();
-        var parentPos = {
-            height: parent.outerHeight()
-        };
-//        console.log(el[0].nodeName, pos, parent[0].nodeName, parentPos);
-
-        // down?
-        offset.bottom += parentPos.height - pos.bottom;
-        if (pos.bottom > parentPos.height) {
-            console.log('inner scroll down', 'todo');
-        }
-        // up?
-        if  (pos.top < 0) {
-            console.log('inner scroll up', 'todo');
-        }
-        offset.top += pos.top;
-
-        if (parent.is('html')) {
-            if ($window.scrollY > offset.top) {
-                if (animated) {
-                    angular.element('html, body').animate({scrollTop: offset.top}, duration);
-                    return function () {
-                        angular.element('html, body').stop(true, true);
-                    };
-                }
-                $window.scrollTo($window.scrollY, offset.top);
-            } else {
-                var windowBottom = parentPos.height - $window.innerHeight - $window.scrollY;
-                if (offset.bottom < windowBottom) {
-                    if (animated) {
-                        angular.element('html, body').animate({scrollTop: $window.scrollY + windowBottom - offset.bottom}, duration);
-                        return function () {
-                            angular.element('html, body').stop(true, true);
-                        };
-                    }
-                    $window.scrollTo($window.scrollY, $window.scrollY + windowBottom - offset.bottom);
-                }
+    function lvScrollTo(el, offset, animated) {
+        var cancelAnimation = noop;
+        var parent = el.parentElement;
+        while (parent.nodeName !== viewportNode) {
+            var parentStyle = getComputedStyle(parent);
+            var overflowStyle = parentStyle.overflow + parentStyle.overflowX + parentStyle.overflowY;
+            if (overflowStyle.match(/scroll|hidden/)) {
+                break;
             }
-            return noop;
+            parent = parent.parentElement;
         }
-        return _lvScroll(parent, offset, animated);
-    }
+        var elRect = el.getBoundingClientRect();
+        var pos = {
+            top: Math.ceil(elRect.top), // @todo Add outline-top-width
+            bottom: Math.ceil(elRect.bottom)
+        };
+        if (parent.nodeName === viewportNode) {
+            var parentPos = {
+                top: 0,
+                bottom: $window.innerHeight
+            };
+        } else {
+            var parentRect = parent.getBoundingClientRect();
+            var parentPos = {
+                top: Math.ceil(parentRect.top),
+                bottom: Math.ceil(parentRect.bottom)
+            };
+        }
+//        console.info(el.nodeName, pos, 'in', parent.nodeName, parentPos, 'offset', offset);
 
-    var timer = null;
-    var cancelAnimation = noop;
-    function lvScroll(el, offset, animated) {
-        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated lv-item.
-        $timeout.cancel(timer);
-        cancelAnimation();
-        cancelAnimation = noop;
-        timer = $timeout(function () {
-            cancelAnimation = _lvScroll(el, offset, animated);
-        }, 10, false);
-    }
+        var relTop = pos.top - parentPos.top;
 
-    return lvScroll;
+        var relBottom = parentPos.bottom - pos.bottom;
+        if (relTop + offset.top < 0) { // up
+            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, animated);
+            relBottom += relTop;
+            relTop = 0;
+        } else if (relBottom + offset.bottom < 0) { // down
+            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop - relBottom + offset.bottom, animated);
+            relTop += relBottom;
+            relBottom = 0;
+        }
+        if (parent.nodeName === viewportNode) {
+            return cancelAnimation;
+        }
+        var cancelParentAnimation = lvScrollTo(parent, {top: relTop, bottom: relBottom}, animated);
+        return function () {
+            cancelAnimation();
+            cancelParentAnimation();
+        };
+    }
+    return lvScrollTo;
 });

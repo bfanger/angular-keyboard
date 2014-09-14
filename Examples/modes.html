@@ -10,6 +10,14 @@
                 outline-style: auto;
                 outline-width: 5px;
             }
+            @-moz-document url-prefix() {
+                .lv-focus {
+                    outline: darkblue dotted 2px;
+                }
+            }
+            _:-ms-input-placeholder, :root .lv-focus {
+                outline: darkblue dotted 2px;
+            }
             .text-ellipis {
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -19,7 +27,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>NG ListView - Demo</h1>
+            <h1>NG ListView - Modes demo</h1>
             <div class="row">
                 <div class="col-md-4" ng-repeat="mode in ['list', 'select', 'multiselect']">
                     <dl class="dl-horizontal">
@@ -62,12 +70,12 @@
                 }
                 $rootScope.items = items;
                 $rootScope.list = {
-                    list: items[19],
+                    list: items[3],
                     select: items[2],
                     multiselect: [items[0], items[1]]
                 };
                 $timeout(function () {
-                    angular.element('[lv-list]:first').focus();
+                    document.querySelector('[lv-list]').focus();
                 });
             });
         </script>
