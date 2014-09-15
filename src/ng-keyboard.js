@@ -1,42 +1,32 @@
 /**
- * ng-listview
+ * ng-keyboard
  *
- * A ListView for AngularJS
+ * Keyboard behavior for AngularJS WebApps
  *
  *
  * Inspired by: Apple Mail
  * Implementation inspirated by: WinJS ListView http://try.buildwinjs.com/pages/listview/options/default.html
  */
-angular.module('listview', []);
-angular.module('listview').constant('undefined');
-/**
- * lv-list directive
- *
- * Usage:
- * <div lv-list ng-model="selection"> ... <div lv-item="aItem">...</div> ... </div>
- */
-angular.module('listview').directive('lvList', function (undefined) {
+angular.module('keyboard', []);
+angular.module('keyboard').constant('undefined');
+angular.module('keyboard').factory('KbListController', function (undefined) {
     'use strict';
-
-    // Inject style
-    document.querySelector('style').innerHTML += '\n[lv-list]:focus { outline: none; } [lv-item]:hover { cursor: pointer; }';
-
     /**
-     * @class LvListController
+     * @class KbListController
      * @param {jQElement} $element
      */
-    function LvListController($element) {
-        this._element = $element[0];
+    function KbListController($element) {
         this.mode = 'list';
-        this.orientation = 'vertical';
 
         this.selected = undefined; // Selected model(s)
         this.active = undefined; // Model of the current list-item.
         this.focus = undefined; // Model of the current list-item and the listview is focussed.
-        this.isFocusEvent = false; // Used to determine a the scroll delay, to prevent swallowed clicks
+
+        this._element = $element[0];
+        this._isFocusEvent = false; // Used to determine a the scroll delay, to prevent swallowed clicks
     }
-    angular.extend(LvListController.prototype, {
-        /** @lends LvListController */
+    angular.extend(KbListController.prototype, {
+        /** @lends kbListController */
 
         /**
          * Select the given model.
@@ -131,10 +121,10 @@ angular.module('listview').directive('lvList', function (undefined) {
          * @returns {Object}
          */
         _locate: function (model) {
-            var items = this._element.querySelectorAll('[lv-item]');
+            var items = this._element.querySelectorAll('[kb-item]');
             for (var i = 0; i < items.length; i++) {
                 var el = angular.element(items.item(i));
-                var controller = el.controller('lvItem');
+                var controller = el.controller('kbItem');
                 if (controller.getModel() === model) {
                     var location = {
                         model: model,
@@ -145,7 +135,7 @@ angular.module('listview').directive('lvList', function (undefined) {
                         var prev = {
                             element: angular.element(items.item(i - 1))
                         };
-                        prev.controller = prev.element.controller('lvItem');
+                        prev.controller = prev.element.controller('kbItem');
                         prev.model = prev.controller.getModel();
                         location.previous = prev;
                     }
@@ -153,7 +143,7 @@ angular.module('listview').directive('lvList', function (undefined) {
                         var next = {
                             element: angular.element(items.item(i + 1))
                         };
-                        next.controller = next.element.controller('lvItem');
+                        next.controller = next.element.controller('kbItem');
                         next.model = next.controller.getModel();
                         location.next = next;
                     }
@@ -168,83 +158,87 @@ angular.module('listview').directive('lvList', function (undefined) {
          */
         first: function () {
             var first = {};
-            var el = this._element.querySelector('[lv-item]');
+            var el = this._element.querySelector('[kb-item]');
             if (el) {
                 first.element = angular.element(el);
-                first.controller = first.element.controller('lvItem');
+                first.controller = first.element.controller('kbItem');
                 first.model = first.controller.getModel();
             }
             return first;
         }
     });
+    return KbListController;
+});
+/**
+ * kb-list directive
+ *
+ * Usage:
+ * <div kb-list ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
+ */
+angular.module('keyboard').directive('kbList', function (KbListController) {
+    'use strict';
 
     return {
-        controller: LvListController,
-        require: ['lvList', 'ngModel'],
+        controller: KbListController,
+        require: ['kbList', 'ngModel'],
         link: function ($scope, el, attrs, controllers) {
-            var lvList = controllers[0];
+            var kbList = controllers[0];
             var ngModel = controllers[1];
             var hasFocus = false;
 
-            lvList.orientation = attrs.lvOrientation || 'detect';
-            lvList.mode = attrs.lvList;
+            kbList.mode = attrs.kbList;
 
             ngModel.$render = function () {
-                if (lvList.mode === 'multiselect') {
+                if (kbList.mode === 'multiselect') {
                     var value = ngModel.$viewValue;
                     if (angular.isArray(value) === false) {
                         value = [];
                     }
-                    lvList.selected = value;
+                    kbList.selected = value;
                     for (var i in value) {
-                        lvList.active = value[i];
+                        kbList.active = value[i];
                         break;
                     }
                 } else {
-                    lvList.selected = lvList.active = ngModel.$viewValue;
+                    kbList.selected = kbList.active = ngModel.$viewValue;
                 }
             };
             if (angular.isUndefined(el.attr('tabindex'))) {
                 el.attr('tabindex', 0);
             }
             el.on('focus', function (e) {
-                lvList.isFocusEvent = true;
-                if (angular.isUndefined(lvList.active)) {
-                    lvList.active = lvList.first().model;
+                kbList._isFocusEvent = true;
+                if (angular.isUndefined(kbList.active)) {
+                    kbList.active = kbList.first().model;
                 }
-                lvList.focus = lvList.active;
+                kbList.focus = kbList.active;
                 hasFocus = true;
-                if (lvList.orientation === 'detect') {
-                    var itemEl = lvList.first().element;
-                    if (itemEl) {
-                        lvList.orientation = 'vertical';
-                        if (itemEl.css('float') === 'left' || itemEl.css('display') === 'inline-block') {
-                            lvList.orientation = 'horizontal';
-                        }
-                    }
-                }
                 $scope.$apply();
-                lvList.isFocusEvent = false;
+                kbList._isFocusEvent = false;
             });
             el.on('blur', function () {
-                lvList.focus = null;
+                kbList.focus = null;
                 hasFocus = false;
                 $scope.$apply();
             });
             el.on('keydown', function (e) {
-                if (angular.isUndefined(lvList.active)) {
+                if (angular.isUndefined(kbList.active)) {
                     return; // all keyboard action require an active listview-item
                 }
-                var prevKey = lvList.orientation === 'horizontal' ? 37 : 38; // Left : Up
-                var nextKey = lvList.orientation === 'horizontal' ? 39 : 40; // Right : Down
-                var changed = false;
 
-                if (e.which === prevKey) {
-                    changed = lvList.previous();
-                } else if (e.which === nextKey) {
-                    changed = lvList.next();
-                } else if (lvList.mode !== 'list' && (e.which === 32 || e.which === 13)) { // Space || Enter
-                    lvList.toggle(lvList.active);
+                var changed = false;
+                if (e.which >= 37 && e.which <= 40) { // An arrow-key?
+                    // @todo Detect orientation
+                    var prevKey = kbList.orientation === 'horizontal' ? 37 : 38; // Left : Up
+                    var nextKey = kbList.orientation === 'horizontal' ? 39 : 40; // Right : Down
+
+                    if (e.which === prevKey) {
+                        changed = kbList.previous();
+                    } else if (e.which === nextKey) {
+                        changed = kbList.next();
+                    }
+                } else if (kbList.mode !== 'list' && (e.which === 32 || e.which === 13)) { // Space || Enter
+                    kbList.toggle(kbList.active);
                     changed = true;
                 }
                 if (changed) {
@@ -253,18 +247,18 @@ angular.module('listview').directive('lvList', function (undefined) {
                 }
             });
             $scope.$watch(function () {
-                return lvList.selected;
+                return kbList.selected;
             }, function (value) {
                 ngModel.$setViewValue(value);
             });
             $scope.$watch(function () {
-                return lvList.active;
+                return kbList.active;
             }, function (value) {
-                if (lvList.mode === 'list') {
-                    lvList.selected = value;
+                if (kbList.mode === 'list') {
+                    kbList.selected = value;
                 }
                 if (hasFocus) {
-                    lvList.focus = value;
+                    kbList.focus = value;
                 }
             });
         }
@@ -273,48 +267,48 @@ angular.module('listview').directive('lvList', function (undefined) {
 /**
  *
  */
-angular.module('listview').directive('lvItem', function ($animate, $parse, lvScrollTo, $timeout) {
+angular.module('keyboard').directive('kbItem', function ($animate, $parse, kbScrollTo, $timeout) {
     'use strict';
     var timer = null;
     var cancelAnimation = angular.noop;
-    function scrollTo(el, isFocusEvent) {
-        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated lv-item.
+    function scrollTo(el, _isFocusEvent) {
+        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated kb-item.
         $timeout.cancel(timer);
-        if (isFocusEvent) {
+        if (_isFocusEvent) {
             timer = $timeout(function () {
                 cancelAnimation();
-                cancelAnimation = lvScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, false);
+                cancelAnimation = kbScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, false);
             }, 100, false);
         } else {
             cancelAnimation();
-            cancelAnimation = lvScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, true);
+            cancelAnimation = kbScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, true);
         }
     }
     return {
         controller: function ($scope, $element) {
             this.getModel = (function () {
-                var getter = $parse($element.attr('lv-item'));
+                var getter = $parse($element.attr('kb-item'));
                 return function () {
                     return getter($scope);
                 };
             }());
         },
-        require: ['^lvList', 'lvItem'],
+        require: ['^kbList', 'kbItem'],
         link: function ($scope, el, attrs, controllers) {
-            var lvList = controllers[0];
-            var lvItem = controllers[1];
+            var kbList = controllers[0];
+            var kbItem = controllers[1];
 
             el.on('click', function () {
-                if (lvList.mode === 'list') {
-                    lvList.select(lvItem.getModel());
+                if (kbList.mode === 'list') {
+                    kbList.select(kbItem.getModel());
                 } else {
-                    lvList.toggle(lvItem.getModel());
+                    kbList.toggle(kbItem.getModel());
                 }
                 $scope.$apply();
             });
-            var selectedClass = attrs.lvSelectedClass || 'lv-selected';
+            var selectedClass = attrs.kbSelectedClass || 'kb-selected';
             $scope.$watch(function () {
-                return lvList.isSelected(lvItem.getModel());
+                return kbList.isSelected(kbItem.getModel());
             }, function (isSelected) {
                 if (isSelected) {
                     $animate.addClass(el, selectedClass);
@@ -322,9 +316,9 @@ angular.module('listview').directive('lvItem', function ($animate, $parse, lvScr
                     $animate.removeClass(el, selectedClass);
                 }
             });
-            var activeClass = attrs.lvActiveClass || 'lv-active';
+            var activeClass = attrs.kbActiveClass || 'kb-active';
             $scope.$watch(function () {
-                return lvList.active === lvItem.getModel();
+                return kbList.active === kbItem.getModel();
             }, function (isActive) {
                 if (isActive) {
                     $animate.addClass(el, activeClass);
@@ -332,13 +326,13 @@ angular.module('listview').directive('lvItem', function ($animate, $parse, lvScr
                     $animate.removeClass(el, activeClass);
                 }
             });
-            var focusClass = attrs.lvFocusClass || 'lv-focus';
+            var focusClass = attrs.kbFocusClass || 'kb-focus';
             $scope.$watch(function () {
-                return lvList.focus === lvItem.getModel();
+                return kbList.focus === kbItem.getModel();
             }, function (hasFocus) {
                 if (hasFocus) {
                     $animate.addClass(el, focusClass);
-                    scrollTo(el, lvList.isFocusEvent);
+                    scrollTo(el, kbList._isFocusEvent);
                 } else {
                     $animate.removeClass(el, focusClass);
                 }
@@ -347,12 +341,12 @@ angular.module('listview').directive('lvItem', function ($animate, $parse, lvScr
     };
 });
 /**
- * Helper for scrolling the active (and focussed) lv-item into a viewable area.
+ * Helper for scrolling the active (and focussed) kb-item into a viewable area.
  *
  * @param {type} param1
  * @param {type} param2
  */
-angular.module('listview').factory('lvScrollTo', function ($log, $window) {
+angular.module('keyboard').factory('kbScrollTo', function ($log, $window) {
     var noop = angular.noop;
 
     var duration = 150;
@@ -393,7 +387,7 @@ angular.module('listview').factory('lvScrollTo', function ($log, $window) {
      * @param {Boolean} animated
      * @returns {Function} cancel animation
      */
-    function lvScrollTo(el, offset, animated) {
+    function kbScrollTo(el, offset, animated) {
         var cancelAnimation = noop;
         var parent = el.parentElement;
         while (parent.nodeName !== viewportNode) {
@@ -438,11 +432,11 @@ angular.module('listview').factory('lvScrollTo', function ($log, $window) {
         if (parent.nodeName === viewportNode) {
             return cancelAnimation;
         }
-        var cancelParentAnimation = lvScrollTo(parent, {top: relTop, bottom: relBottom}, animated);
+        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, bottom: relBottom}, animated);
         return function () {
             cancelAnimation();
             cancelParentAnimation();
         };
     }
-    return lvScrollTo;
+    return kbScrollTo;
 });

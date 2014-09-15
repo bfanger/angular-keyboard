@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html ng-app="demo">
     <head>
-        <title>NG ListView - Orientation demo</title>
+        <title>Scroll and orientation - ngKeyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="../src/ng-keyboard.example.css">
         <style>
-            /**/
-
             body {
                 font-family: Open Sans, sans-serif;
                 background: black;
@@ -19,7 +18,6 @@
                 background-color: #5729c1;
                 color: #ffffff;
             }
-
             h1 {
                 font-weight: normal;
             }
@@ -45,10 +43,10 @@
                 outline: rgba(255, 255, 255, 0.3) solid 3px;
                 background:  rgba(255, 255, 255, 0.3);
             }
-            .list__item.lv-focus {
+            .list__item.kb-focus {
                 outline: 2px solid white;
             }
-            .list__item.lv-active {
+            .list__item.kb-active {
                 background: #5729c1;
             }
             .list__item__avatar {
@@ -58,20 +56,19 @@
                 margin-right: 10px;
 
             }
-
         </style>
 
     </head>
     <body>
-        <h1>NG ListView - Demo</h1>
-        <div lv-list ng-model="list.selection" class="list">
-            <div lv-item="item" ng-repeat="item in items track by item.id" class="list__item">
+        <h1>ngKeyboard: Scroll and orientation</h1>
+        <div kb-list ng-model="list.selection" class="list">
+            <div kb-item="item" ng-repeat="item in items track by item.id" class="list__item">
                 <img class="list__item__avatar" ng-src="{{item.avatar}}">
                 <h4>{{item.name}}</h4>
             </div>
         </div>
         <p>
-        Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the ui-dark theme.
+            Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the ui-dark theme.
         </p>
 
 
@@ -80,9 +77,9 @@
         <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
 
-        <script src="../src/ng-listview.js"></script>
+        <script src="../src/ng-keyboard.js"></script>
         <script>
-            var demo = angular.module('demo', ['listview']);
+            var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout) {
                 var items = [];
                 for (var i = 0; i < 30; i++) {
@@ -94,10 +91,10 @@
                 }
                 $rootScope.items = items;
                 $rootScope.list = {
-                    selection: items[0]
+//                    selection: items[0]
                 };
                 $timeout(function () {
-                    angular.element('[lv-list]').focus();
+                    angular.element('[kb-list]').focus();
                 }, 100);
             });
         </script>

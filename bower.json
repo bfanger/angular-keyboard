@@ -1,23 +1,26 @@
 {
-  "name": "ng-listview",
-  "version": "0.0.0",
-  "authors": [
-    "Bob Fanger <bfanger@gmail.com>"
-  ],
-  "description": "ListView for AngularJS",
-  "main": "src/ng-listview.js",
-  "keywords": [
-    "angular",
-    "listview",
-    "keyboard"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components"
-  ],
-  "dependencies": {
-    "angular": "~1.*"
-  }
+    "name": "ng-keyboard",
+    "version": "0.0.0",
+    "authors": [
+        "Bob Fanger <bfanger@gmail.com>"
+    ],
+    "description": "Keyboard behavior for AngularJS WebApps",
+    "main": "src/ng-keyboard.js",
+    "keywords": [
+        "keyboard",
+        "navigation",
+        "scroll",
+        "listview",
+        "angular",
+        "angularjs"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components"
+    ],
+    "dependencies": {
+        "angular": "~1.*"
+    }
 }
