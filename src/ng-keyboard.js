@@ -429,26 +429,35 @@ angular.module('keyboard').factory('kbScrollTo', function ($log, $window) {
         }
         var elRect = el.getBoundingClientRect();
         var pos = {
-            top: Math.ceil(elRect.top), // @todo Add outline-top-width
-            bottom: Math.ceil(elRect.bottom)
+            top: Math.ceil(elRect.top),
+            right: Math.ceil(elRect.right),
+            bottom: Math.ceil(elRect.bottom),
+            left: Math.ceil(elRect.left)
         };
+        // @todo Add outline-width to pos
         if (parent.nodeName === viewportNode) {
             var parentPos = {
                 top: 0,
-                bottom: $window.innerHeight
+                right: $window.innerWidth,
+                bottom: $window.innerHeight,
+                left: 0
             };
         } else {
             var parentRect = parent.getBoundingClientRect();
             var parentPos = {
                 top: Math.ceil(parentRect.top),
-                bottom: Math.ceil(parentRect.bottom)
+                right: Math.ceil(parentRect.right),
+                bottom: Math.ceil(parentRect.bottom),
+                left: Math.ceil(parentRect.left)
             };
         }
 //        console.info(el.nodeName, pos, 'in', parent.nodeName, parentPos, 'offset', offset);
 
         var relTop = pos.top - parentPos.top;
-
+        var relRight = parentPos.right - pos.right;
         var relBottom = parentPos.bottom - pos.bottom;
+        var relLeft = pos.left - parentPos.left;
+
         if (relTop + offset.top < 0) { // up
             cancelAnimation = change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, animated);
             relBottom += relTop;
@@ -458,10 +467,19 @@ angular.module('keyboard').factory('kbScrollTo', function ($log, $window) {
             relTop += relBottom;
             relBottom = 0;
         }
+        if (relLeft + offset.left < 0) { // left
+            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft + relLeft + offset.left, animated);
+            relRight += relLeft;
+            relLeft = 0;
+        } else if (relRight + offset.right < 0) { // right
+            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft - relRight + offset.right, animated);
+            relLeft += relRight;
+            relRight = 0;
+        }
         if (parent.nodeName === viewportNode) {
             return cancelAnimation;
         }
-        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, bottom: relBottom}, animated);
+        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, right: relTop, bottom: relBottom, left: relLeft}, animated);
         return function () {
             cancelAnimation();
             cancelParentAnimation();
