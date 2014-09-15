@@ -28,10 +28,7 @@
                 margin: 0;
             }
             .list {
-                height: 320px;
-                overflow-y: scroll;
                 padding: 2px;
-                position: relative;
             }
             .list__item {
                 background: #1d1d1d;
@@ -54,14 +51,29 @@
                 height: 60px;
                 float: left;
                 margin-right: 10px;
-
+            }
+            .list--vertical {
+                height: 320px;
+                overflow-y: scroll;
+            }
+            .list--horizontal {
+                width: 600px;
+                overflow-x: scroll;
+                white-space: nowrap;
+            }
+            .list--horizontal  .list__item {
+                width: 200px;
+                display: inline-block;
+                margin-right: 20px;
             }
         </style>
 
     </head>
     <body>
         <h1>ngKeyboard: Scroll and orientation</h1>
-        <div kb-list ng-model="list.selection" class="list">
+        Orientation: <label><input type="radio" name="orientation" ng-model="list.orientation" value="vertical"> Vertical</label>
+        <label><input type="radio" name="orientation" ng-model="list.orientation" value="horizontal"> Horizontal</label>
+        <div kb-list ng-model="list.selection" class="list" ng-class="['list--' + list.orientation]">
             <div kb-item="item" ng-repeat="item in items track by item.id" class="list__item">
                 <img class="list__item__avatar" ng-src="{{item.avatar}}">
                 <h4>{{item.name}}</h4>
@@ -91,6 +103,7 @@
                 }
                 $rootScope.items = items;
                 $rootScope.list = {
+                    orientation: 'horizontal'
 //                    selection: items[0]
                 };
                 $timeout(function () {
