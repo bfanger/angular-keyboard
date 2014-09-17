@@ -3,7 +3,7 @@
     <head>
         <title>ngKeyboard - Demo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="../src/ng-keyboard.example.css">
+        <link rel="stylesheet" href="../dist/ng-keyboard.example.css">
         <link rel="stylesheet" href="http://bootswatch.com/readable/bootstrap.css">
         <style>
             .text-ellipis {
@@ -39,18 +39,16 @@
             Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'readable' bootstrap theme.
         </div>
 
-
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/0.7.2/MinFaker.js"></script>
         <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
 
-        <script src="../src/ng-keyboard.js"></script>
+        <script src="../dist/ng-keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout) {
                 var items = [];
-                for (var i = 0; i < 20; i++) {
+                for (var i = 0; i < 15; i++) {
                     items.push({
                         id: i + 1,
                         name: Faker.Name.findName()
@@ -58,9 +56,9 @@
                 }
                 $rootScope.items = items;
                 $rootScope.list = {
-                    list: items[3],
-                    select: items[2],
-                    multiselect: [items[0], items[1]]
+                    list: items[0],
+                    select: items[1],
+                    multiselect: [items[2], items[3]]
                 };
                 $timeout(function () {
                     document.querySelector('[kb-list]').focus();

@@ -1,0 +1,25 @@
+{
+  "name": "ng-keyboard",
+  "description": "Keyboard behavior for AngularJS WebApps",
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-livereload": "*",
+    "gulp-noprotocol": "^0.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bfanger/ng-keyboard.git"
+  },
+  "keywords": [
+    "angular",
+    "keyboard",
+    "behavior",
+    "scroll",
+    "listview"
+  ],
+  "author": "bfanger@gmail.com",
+  "bugs": {
+    "url": "https://github.com/bfanger/ng-keyboard/issues"
+  },
+  "homepage": "https://github.com/bfanger/ng-keyboard"
+}

@@ -4,7 +4,7 @@
         "Bob Fanger <bfanger@gmail.com>"
     ],
     "description": "Keyboard behavior for AngularJS WebApps",
-    "main": "src/ng-keyboard.js",
+    "main": "dist/ng-keyboard.min.js",
     "keywords": [
         "keyboard",
         "navigation",
@@ -16,8 +16,11 @@
     "license": "MIT",
     "ignore": [
         "**/.*",
+        "src",
         "node_modules",
-        "bower_components"
+        "bower_components",
+        "gulpfile.js",
+        "package.json"
     ],
     "dependencies": {
         "angular": "~1.*"

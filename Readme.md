@@ -78,3 +78,15 @@ When clicked on a kb-item the 'kb-focus', 'kb-active' and 'kb-selected' classes 
 
 Listens to the arrow-keys for changing the active item and [space] & [enter] to toggle the selection.
 When the active item is changed when in focus, the kb-element is scrolled into the visible viewport.
+
+## Development
+
+* Install [node.js](http://nodejs.org/)
+* Install global dev dependencies: `npm install -g bower gulp`
+* Install local dev dependencies: `npm install && bower install` in repository directory
+* `gulp build` to build
+* `gulp watch` for building & livereload on every change.
+
+## Contributing
+
+When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.
