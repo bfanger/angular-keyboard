@@ -206,6 +206,12 @@ angular.module('keyboard').directive('kbList', function (KbListController) {
             if (angular.isUndefined(el.attr('tabindex'))) {
                 el.attr('tabindex', 0);
             }
+            el.on('click', function () {
+                if (document.activeElement !== this) { // not(:focus) ?
+                    // In Internet Explorer a click doesn't focus containers. ><
+                    el.focus();
+                }
+            });
             el.on('focus', function (e) {
                 kbList._isFocusEvent = true;
                 if (angular.isUndefined(kbList.active)) {

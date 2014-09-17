@@ -34,7 +34,7 @@
                 background: #1d1d1d;
                 padding: 5.09375px;
                 margin-top: 10px;
-                overflow: hidden; // clearfix
+                overflow: hidden; /* clearfix */
             }
             .list__item:hover {
                 outline: rgba(255, 255, 255, 0.3) solid 3px;
@@ -107,7 +107,7 @@
                     orientation: 'vertical'
                 };
                 $timeout(function () {
-                    angular.element('[kb-list]').focus();
+                    document.querySelector('[kb-list]').focus();
                 }, 100);
             });
         </script>
