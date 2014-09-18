@@ -15,7 +15,7 @@ angular.module('keyboard').directive('kbList', function (KbListController) {
             var ngModel = controllers[1];
             var hasFocus = false;
 
-            kbList.mode = attrs.kbList;
+            kbList.mode = attrs.kbList || 'list';
 
             ngModel.$render = function () {
                 if (kbList.mode === 'multiselect') {
