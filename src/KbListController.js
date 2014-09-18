@@ -8,11 +8,9 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
         this.mode = 'list';
 
         this.selected = undefined; // Selected model(s)
-        this.active = undefined; // Model of the current list-item.
-        this.focus = undefined; // Model of the current list-item and the listview is focussed.
+        this.active = undefined; // kbItemController of the active kb-item.
 
         this._element = $element[0];
-        this._isFocusEvent = false; // Used to determine a the scroll delay, to prevent swallowed clicks
     }
     angular.extend(KbListController.prototype, {
         /** @lends kbListController */
@@ -24,7 +22,6 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
          * @param {*} model
          */
         select: function (model) {
-            this.active = model;
             if (this.mode === 'multiselect') {
                 if (this.isSelected(model) === false) {
                     this.selected.push(model);
@@ -41,7 +38,6 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
          * @param {*} model
          */
         deselect: function (model) {
-            this.active = model;
             if (this.mode === 'multiselect') {
                 var index = this.selected.indexOf(model);
                 if (index !== -1) {
@@ -78,82 +74,78 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
             }
         },
         /**
-         * Activate the previous listview-item.
+         * Activate the previous item.
          *
          * @returns {Boolean}
          */
         previous: function () {
-            var prev = this._locate(this.active).previous;
+            var prev = this._getSiblingItems(this.active).previous;
             if (prev) {
-                this.active = prev.model;
+                this.active = prev;
                 return true;
             }
             return false;
         },
         /**
-         * Activate the next listview-item.
+         * Activate the next item.
          *
          * @returns {Boolean}
          */
         next: function () {
-            var next = this._locate(this.active).next;
+            var next = this._getSiblingItems(this.active).next;
             if (next) {
-                this.active = next.model;
+                this.active = next;
                 return true;
             }
             return false;
         },
         /**
-         * Returns the element, controller and models from the current, prevous and next listview-item.
-         *
-         * @param {*} model
-         * @returns {Object}
+         * Returns the (first) kbItemController  which has the given model value.
+         * @returns {KbItemController}
          */
         _locate: function (model) {
             var items = this._element.querySelectorAll('[kb-item]');
             for (var i = 0; i < items.length; i++) {
-                var el = angular.element(items.item(i));
-                var controller = el.controller('kbItem');
-                if (controller.getModel() === model) {
-                    var location = {
-                        model: model,
-                        controller: controller,
-                        element: el
-                    };
+                var kbItem = angular.element(items.item(i)).controller('kbItem');
+                if (kbItem.getModel() === model) {
+                    return kbItem;
+                }
+            }
+        },
+        /**
+         * Returns the element, controller and models from the current, prevous and next item.
+         *
+         * @param {KbItemController} kbItem
+         * @returns {Object} with up to 2 KbItemControllers: previous and next.
+         */
+        _getSiblingItems: function (kbItem) {
+            var element = kbItem.element[0];
+            console.log(kbItem);
+            var items = this._element.querySelectorAll('[kb-item]');
+            for (var i = 0; i < items.length; i++) {
+                var el = items.item(i);
+                if (el === element) {
+                    var siblings = {};
                     if (i !== 0) {
-                        var prev = {
-                            element: angular.element(items.item(i - 1))
-                        };
-                        prev.controller = prev.element.controller('kbItem');
-                        prev.model = prev.controller.getModel();
-                        location.previous = prev;
+                        siblings.previous = angular.element(items.item(i - 1)).controller('kbItem');
                     }
                     if (i < items.length - 1) {
-                        var next = {
-                            element: angular.element(items.item(i + 1))
-                        };
-                        next.controller = next.element.controller('kbItem');
-                        next.model = next.controller.getModel();
-                        location.next = next;
+                        siblings.next = angular.element(items.item(i + 1)).controller('kbItem');
                     }
-                    return location;
+                    return siblings;
                 }
             }
             return {};
         },
         /**
-         * Returns the element, controller and model of the first listview-item.
-         * @returns {Object}
+         * Returns the controller of the first item.
+         * @returns {kbItemController}
          */
         first: function () {
-            var first = {};
             var el = this._element.querySelector('[kb-item]');
             if (el) {
-                first.element = angular.element(el);
-                first.controller = first.element.controller('kbItem');
-                first.model = first.controller.getModel();
+                return el.controller('kbItem');
             }
-            return first;
         }
     });
     return KbListController;
