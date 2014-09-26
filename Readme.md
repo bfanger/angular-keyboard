@@ -1,6 +1,8 @@
-# ngKeyboard
+# Angular Keyboard
 
-Keyboard behavior for AngularJS WebApps.
+Keyboard behavior for AngularJS Webapps.
+
+(But the directives also respond to touch & mouse events)
 
 ## Goals
 
@@ -10,15 +12,15 @@ Keyboard behavior for AngularJS WebApps.
 
 ## Demos
 
-* [kbList modes demo](http://bfanger.github.io/ng-keyboard/Examples/modes.html)
-* [Scroll and orientation demo](http://bfanger.github.io/ng-keyboard/Examples/orientation.html)
+* [kbList modes demo](http://bfanger.github.io/angular-keyboard/Examples/modes.html)
+* [Scroll and orientation demo](http://bfanger.github.io/angular-keyboard/Examples/orientation.html)
 
 ## Installation
 
 Download or install via bower:
-`bower install ng-keyboard`
+`bower install angular-keyboard`
 
-Add 'keyboard' as dependancy.
+Include the `dist/keyboard.min.js` script and add 'keyboard' as dependancy.
 
 ```js
 angular.module('myApp', ['keyboard']);

@@ -1,6 +1,6 @@
 {
-  "name": "ng-keyboard",
-  "description": "Keyboard behavior for AngularJS WebApps",
+  "name": "angular-keyboard",
+  "description": "Keyboard behavior for AngularJS Webapps",
   "devDependencies": {
     "gulp": "*",
     "gulp-livereload": "*",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bfanger/ng-keyboard.git"
+    "url": "https://github.com/bfanger/angular-keyboard.git"
   },
   "keywords": [
     "angular",
@@ -19,7 +19,7 @@
   ],
   "author": "bfanger@gmail.com",
   "bugs": {
-    "url": "https://github.com/bfanger/ng-keyboard/issues"
+    "url": "https://github.com/bfanger/angular-keyboard/issues"
   },
-  "homepage": "https://github.com/bfanger/ng-keyboard"
+  "homepage": "https://github.com/bfanger/angular-keyboard"
 }

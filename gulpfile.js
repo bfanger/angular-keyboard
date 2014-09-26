@@ -8,7 +8,7 @@ gulp.task('build', function () {
     return gulp
         .src(['src/keyboard.module.js', 'src/**/*.js']) // All js files, but keyboard.module.js first.
         .pipe(noprotocol.angular({
-            output: 'ng-keyboard.js'
+            output: 'keyboard.js'
         })).pipe(gulp.dest('dist/'));
 });
 gulp.task('watch', ['build'], function () {

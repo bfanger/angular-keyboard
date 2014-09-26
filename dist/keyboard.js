@@ -1,7 +1,7 @@
 /**
- * ng-keyboard
+ * angular-keyboard
  *
- * Keyboard behavior for AngularJS WebApps
+ * Keyboard behavior for AngularJS Webapps
  *
  *
  * Inspired by: Apple Mail
@@ -497,4 +497,4 @@ angular.module('keyboard').directive('kbList', ["KbListController", function (Kb
         }
     };
 }]);
-//# sourceMappingURL=ng-keyboard.js.map
+//# sourceMappingURL=keyboard.js.map

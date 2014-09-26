@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html ng-app="demo">
     <head>
-        <title>Scroll and orientation - ngKeyboard</title>
+        <title>Scroll and orientation - Angular Keyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="../dist/ng-keyboard.example.css">
+        <link rel="stylesheet" href="../dist/keyboard.example.css">
         <style>
             body {
                 font-family: Open Sans, sans-serif;
@@ -70,7 +70,7 @@
 
     </head>
     <body>
-        <h1>ngKeyboard: Scroll and orientation</h1>
+        <h1>Angular Keyboard: Scroll and orientation</h1>
         Orientation: <label><input type="radio" name="orientation" ng-model="list.orientation" value="vertical"> Vertical</label>
         <label><input type="radio" name="orientation" ng-model="list.orientation" value="horizontal"> Horizontal</label>
         <div kb-list ng-model="list.selection" class="list" ng-class="['list--' + list.orientation]">
@@ -89,7 +89,7 @@
         <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
 
-        <script src="../dist/ng-keyboard.js"></script>
+        <script src="../dist/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout) {

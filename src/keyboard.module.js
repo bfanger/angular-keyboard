@@ -1,7 +1,7 @@
 /**
- * ng-keyboard
+ * angular-keyboard
  *
- * Keyboard behavior for AngularJS WebApps
+ * Keyboard behavior for AngularJS Webapps
  *
  *
  * Inspired by: Apple Mail

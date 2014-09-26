@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html ng-app="demo">
     <head>
-        <title>ngKeyboard - Demo</title>
+        <title>kb-list demo - Angular Keyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="../dist/ng-keyboard.example.css">
+        <link rel="stylesheet" href="../dist/keyboard.example.css">
         <link rel="stylesheet" href="http://bootswatch.com/readable/bootstrap.css">
         <style>
             .text-ellipis {
@@ -15,7 +15,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>ngKeyboard: kbList modes</h1>
+            <h1>Angular Keyboard: kbList modes</h1>
             <div class="row">
                 <div class="col-md-4" ng-repeat="mode in ['list', 'select', 'multiselect']">
                     <dl class="dl-horizontal">
@@ -43,7 +43,7 @@
         <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
 
-        <script src="../dist/ng-keyboard.js"></script>
+        <script src="../dist/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout) {
