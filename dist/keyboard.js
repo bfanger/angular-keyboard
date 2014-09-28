@@ -20,6 +20,7 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$log"
      * @ngInject @param {jQElement} $element
      */
     function KbContainerController($element) {
+        this.identifier = '[kb-container]';
         this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;
@@ -211,26 +212,18 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$log"
     });
     return KbContainerController;
 }]);
-angular.module('keyboard').factory('KbItemController', ["kbFocus", function (kbFocus) {
+angular.module('keyboard').factory('KbItemController', ["kbScroll", "undefined", function (kbScroll, undefined) {
     'use strict';
 
     /**
      * @class KbItemController
-     * @param {jQElement} $element
      * @ngInject
+     * @param {jQElement} $element
      */
-    function KbItemController($element) {
+    return function KbItemController($element) {
+        this.model = undefined;
     	this.element = $element;
-    }
-    KbItemController.$inject = ["$element"];
-
-    angular.extend(KbItemController.prototype, {
-    	focus: function () {
-    		this.element.attr('tabindex', 0);
-            kbFocus(this.element);
-    	}
-    });
-    return KbItemController;
+    };
 
 }]);
 
@@ -363,7 +356,7 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
  * Usage:
  * <div kb-list ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
-angular.module('keyboard').directive('kbList', ["KbContainerController", "$parse", function (KbContainerController, $parse) {
+angular.module('keyboard').directive('kbList', ["KbContainerController", "kbScroll", function (KbContainerController, kbScroll) {
     'use strict';
 
     return {
@@ -377,53 +370,22 @@ angular.module('keyboard').directive('kbList', ["KbContainerController", "$parse
                 activate: function (kbItem) {
                     this.active = kbItem;
                     this.select(kbItem.model);
-                    kbItem.focus();
+                    kbScroll.focus(kbItem.element[0]);
                 },
                 invoke: function () {
                     return false;
                 }
-
             });
         }
     };
 }]);
-//            var getModal =ter = $parse(attrs.attrs);
-
-//            ngModel.$render = function () {
-//                if (kbContainer.mode === 'multiselect') {
-//                    kbContainer.selected = angular.isArray(ngModel.$viewValue) ? ngModel.$viewValue : [];
-//                    for (var i in kbContainer.selected) {
-//                        var kbItem = kbContainer._locate(kbContainer.selected[i]);
-//                        if (kbItem) {
-//                            kbContainer.active = kbItem;
-//                            break;
-//                        }
-//                    }
-//                } else {
-//                    kbContainer.selected[0] = ngModel.$viewValue;
-//                    var kbItem = kbContainer._locate(kbContainer.selected[0]);
-//                    if (kbItem) {
-//                        kbContainer.active = kbItem;
-//                    }
-//                }
-//            };
-//            $scope.$watch(function () {
-//                return kbContainer.selected;
-//            }, function (selected) {
-//                if (kbContainer.mode === 'multiselect') {
-////                    ngModel.$setViewValue(selected);
-//                } else {
-////                    ngModel.$setViewValue(selected[0]);
-//                }
-//            });
-
 /**
  * kb-select directive
  *
  * Usage:
  * <div kb-select ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
-angular.module('keyboard').directive('kbSelect', ["KbContainerController", function (KbContainerController) {
+angular.module('keyboard').directive('kbSelect', ["KbContainerController", "kbScroll", function (KbContainerController, kbScroll) {
     'use strict';
 
     return {
@@ -438,7 +400,7 @@ angular.module('keyboard').directive('kbSelect', ["KbContainerController", funct
                 multiple: angular.isDefined(attrs.multiple),
                 activate: function (kbItem) {
                     this.active = kbItem;
-                    kbItem.focus();
+                    kbScroll.focus(kbItem.element[0]);
                 },
                 invoke: function (kbItem) {
                     this.toggle(kbItem.model);
@@ -448,115 +410,21 @@ angular.module('keyboard').directive('kbSelect', ["KbContainerController", funct
         }
     };
 }]);
-//            ngModel.$render = function () {
-//                if (kbContainer.mode === 'multiselect') {
-//                    kbContainer.selected = angular.isArray(ngModel.$viewValue) ? ngModel.$viewValue : [];
-//                    for (var i in kbContainer.selected) {
-//                        var kbItem = kbContainer._locate(kbContainer.selected[i]);
-//                        if (kbItem) {
-//                            kbContainer.active = kbItem;
-//                            break;
-//                        }
-//                    }
-//                } else {
-//                    kbContainer.selected[0] = ngModel.$viewValue;
-//                    var kbItem = kbContainer._locate(kbContainer.selected[0]);
-//                    if (kbItem) {
-//                        kbContainer.active = kbItem;
-//                    }
-//                }
-//            };
-//            $scope.$watch(function () {
-//                return kbContainer.selected;
-//            }, function (selected) {
-//                if (kbContainer.mode === 'multiselect') {
-////                    ngModel.$setViewValue(selected);
-//                } else {
-////                    ngModel.$setViewValue(selected[0]);
-//                }
-//            });
-
-/**
- * Focus an element, but
- */
-angular.module('keyboard').factory('kbFocus', ["kbScrollTo", function (kbScrollTo) {
-//    var duration = 150;
-//    var cancelAnimation = angular.noop;
-//    function scrollTo(el, _isFocusEvent) {
-//        // Wrapped in a timeout, prevents issues with focus & click events and scrolls to the last activated kb-item.
-//        $timeout.cancel(timer);
-//        if (_isFocusEvent) {
-//            timer = $timeout(function () {
-//                cancelAnimation();
-//                cancelAnimation = kbScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, 0);
-//            }, 100, false);
-//        } else {
-//            cancelAnimation();
-//            cancelAnimation = kbScrollTo(el[0], {top: 0, right: 0, bottom: 0, left: 0}, 150);
-//        }
-//    }
-    // var focusClass = attrs.kbFocusClass || 'kb-focus';
-            // $scope.$watch(function () {
-            //     return kbList.focus === kbItem.getModel();
-            // }, function (hasFocus) {
-            //     if (hasFocus) {
-            //         $animate.addClass(el, focusClass);
-            //         scrollTo(el, kbList._isFocusEvent);
-            //     } else {
-            //         $animate.removeClass(el, focusClass);
-            //     }
-            // });
-        var timer = null;
-
-// if (angular.isUndefined(el.attr('tabindex'))) {
-            //     el.attr('tabindex', 0);
-            // }
-            // el.on('click', function () {
-            //     if (document.activeElement !== this) { // not(:focus) ?
-            //         // In Internet Explorer a click doesn't focus containers. ><
-            //         el.focus();
-            //     }
-            // });
-            // el.on('focus', function (e) {
-            //     kbList._isFocusEvent = true;
-            //     if (angular.isUndefined(kbList.active)) {
-            //         kbList.active = kbList.first().model;
-            //     }
-            //     kbList.focus = kbList.active;
-            //     hasFocus = true;
-            //     $scope.$apply();
-            //     kbList._isFocusEvent = false;
-            // });
-            // el.on('blur', function () {
-            //     kbList.focus = null;
-            //     hasFocus = false;
-            //     $scope.$apply();
-            // });
-
-//    var cancel = angular.noop;
-    /**
-     *
-     * @param {Element} el
-     */
-    return function(el) {
-//        console.log(el);
-//        cancel();
-//        cancel = kbScrollTo(el)
-
-        el.focus();
-
-    };
-}]);
 /**
  * Helper for scrolling an element into the viewable area.
+ *
+ * Usage:
+ * kbScroll.to(el, offset, duration)
  */
-angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) {
+angular.module('keyboard').service('kbScroll', ["$window", function ($window) {
 
     // Most browsers scroll via scrollTop on the <body> element.
     var viewportNode = 'BODY';
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
         viewportNode = 'HTML'; // Except Firefox, which uses scrollTop on <html> element.
     }
+
+    var kbScroll = this;
 
     /**
      * Change the scrollposition animated and return a function that cancels the animation.
@@ -567,7 +435,7 @@ angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) 
      * @param {Number} duration
      * @returns {Function}
      */
-    function change(container, property, value, duration) {
+    this.change = function (container, property, value, duration) {
         if (duration && angular.element.prototype.animate) { // jQuery.animate is available?
             var el = angular.element(container);
             var props = {};
@@ -580,17 +448,14 @@ angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) 
             container[property] = value;
             return angular.noop;
         }
-    }
+    };
 
     /**
-     *
-     * @param {Element} el  The DOMElement
-     * @param {Object} offset  Allowed hidden
-     * @param {Number} duration  Duration of the animation in ms
-     * @returns {Function} cancel animation
+     * Get the scrollcontainer of the given element
+     * @param {Element} el
+     * @returns {Element}
      */
-    function kbScrollTo(el, offset, duration) {
-        var cancelAnimation = angular.noop;
+    this.getScrollParent = function (el) {
         var parent = el.parentElement;
         while (parent.nodeName !== viewportNode) {
             var parentStyle = getComputedStyle(parent);
@@ -600,6 +465,19 @@ angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) 
             }
             parent = parent.parentElement;
         }
+        return parent;
+    };
+
+    /**
+     *
+     * @param {Element} el  The DOMElement
+     * @param {Object} offset  Allowed hidden
+     * @param {Number} duration  Duration of the animation in ms
+     * @returns {Function} cancel animation
+     */
+    this.to = function (el, offset, duration) {
+        var cancelAnimation = angular.noop;
+        var parent = kbScroll.getScrollParent(el);
         var elRect = el.getBoundingClientRect();
         var pos = {
             top: Math.ceil(elRect.top),
@@ -632,33 +510,55 @@ angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) 
         var relLeft = pos.left - parentPos.left;
 
         if (relTop + offset.top < 0) { // up
-            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, duration);
+            cancelAnimation = kbScroll.change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, duration);
             relBottom += relTop;
             relTop = 0;
         } else if (relBottom + offset.bottom < 0) { // down
-            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop - relBottom + offset.bottom, duration);
+            cancelAnimation = kbScroll.change(parent, 'scrollTop', parent.scrollTop - relBottom + offset.bottom, duration);
             relTop += relBottom;
             relBottom = 0;
         }
         if (relLeft + offset.left < 0) { // left
-            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft + relLeft + offset.left, duration);
+            cancelAnimation = kbScroll.change(parent, 'scrollLeft', parent.scrollLeft + relLeft + offset.left, duration);
             relRight += relLeft;
             relLeft = 0;
         } else if (relRight + offset.right < 0) { // right
-            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft - relRight + offset.right, duration);
+            cancelAnimation = kbScroll.change(parent, 'scrollLeft', parent.scrollLeft - relRight + offset.right, duration);
             relLeft += relRight;
             relRight = 0;
         }
         if (parent.nodeName === viewportNode) {
             return cancelAnimation;
         }
-        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, right: relTop, bottom: relBottom, left: relLeft}, duration);
+        var cancelParentAnimation = kbScroll.to(parent, {top: relTop, right: relTop, bottom: relBottom, left: relLeft}, duration);
         return function () {
             cancelAnimation();
             cancelParentAnimation();
         };
-    }
-    return kbScrollTo;
+    };
+
+    var cancelFocus = angular.noop;
+    /**
+     * Focus an element
+     * @param {Element} el
+     */
+    this.focus = function (el) {
+        cancelFocus();
+        var parentEl = this.getScrollParent(el);
+        var scrollOffset = {
+            top: parentEl.scrollTop,
+            left: parentEl.scrollLeft
+        };
+        if (!el.hasAttribute('tabindex')) {
+            el.setAttribute('tabindex', 0);
+        };
+        el.focus();
+        if (parentEl.scrollTop !== scrollOffset.top || parentEl.scrollLeft !== scrollOffset.left) { // position changed?
+            parentEl.scrollTop = scrollOffset.top;
+            parentEl.scrollLeft = scrollOffset.left;
+            cancelFocus = this.to(el, {top: 0, right:0, bottom:0, left: 0}, 200);
+        }
+    };
 }]);
 
 //# sourceMappingURL=keyboard.js.map

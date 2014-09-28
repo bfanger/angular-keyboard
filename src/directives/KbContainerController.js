@@ -5,6 +5,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
      * @ngInject @param {jQElement} $element
      */
     function KbContainerController($element) {
+        this.identifier = '[kb-container]';
         this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;

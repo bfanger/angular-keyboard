@@ -4,7 +4,7 @@
  * Usage:
  * <div kb-select ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
-angular.module('keyboard').directive('kbSelect', function (KbContainerController) {
+angular.module('keyboard').directive('kbSelect', function (KbContainerController, kbScroll) {
     'use strict';
 
     return {
@@ -19,7 +19,7 @@ angular.module('keyboard').directive('kbSelect', function (KbContainerController
                 multiple: angular.isDefined(attrs.multiple),
                 activate: function (kbItem) {
                     this.active = kbItem;
-                    kbItem.focus();
+                    kbScroll.focus(kbItem.element[0]);
                 },
                 invoke: function (kbItem) {
                     this.toggle(kbItem.model);
@@ -29,30 +29,3 @@ angular.module('keyboard').directive('kbSelect', function (KbContainerController
         }
     };
 });
-//            ngModel.$render = function () {
-//                if (kbContainer.mode === 'multiselect') {
-//                    kbContainer.selected = angular.isArray(ngModel.$viewValue) ? ngModel.$viewValue : [];
-//                    for (var i in kbContainer.selected) {
-//                        var kbItem = kbContainer._locate(kbContainer.selected[i]);
-//                        if (kbItem) {
-//                            kbContainer.active = kbItem;
-//                            break;
-//                        }
-//                    }
-//                } else {
-//                    kbContainer.selected[0] = ngModel.$viewValue;
-//                    var kbItem = kbContainer._locate(kbContainer.selected[0]);
-//                    if (kbItem) {
-//                        kbContainer.active = kbItem;
-//                    }
-//                }
-//            };
-//            $scope.$watch(function () {
-//                return kbContainer.selected;
-//            }, function (selected) {
-//                if (kbContainer.mode === 'multiselect') {
-////                    ngModel.$setViewValue(selected);
-//                } else {
-////                    ngModel.$setViewValue(selected[0]);
-//                }
-//            });

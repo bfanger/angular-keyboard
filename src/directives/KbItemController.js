@@ -1,21 +1,14 @@
-angular.module('keyboard').factory('KbItemController', function (kbFocus) {
+angular.module('keyboard').factory('KbItemController', function (kbScroll, undefined) {
     'use strict';
 
     /**
      * @class KbItemController
-     * @param {jQElement} $element
      * @ngInject
+     * @param {jQElement} $element
      */
-    function KbItemController($element) {
+    return function KbItemController($element) {
+        this.model = undefined;
     	this.element = $element;
-    }
-
-    angular.extend(KbItemController.prototype, {
-    	focus: function () {
-    		this.element.attr('tabindex', 0);
-            kbFocus(this.element);
-    	}
-    });
-    return KbItemController;
+    };
 
 });
