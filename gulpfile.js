@@ -1,11 +1,13 @@
-
+'use strict';
 var gulp = require('gulp');
 var noprotocol = require('gulp-noprotocol');
 var livereload = require('gulp-livereload');
 
 gulp.task('build', function () {
-
-    return gulp
+    gulp
+        .src(['src/*.css'])
+        .pipe(gulp.dest('dist/'));
+    gulp
         .src(['src/keyboard.module.js', 'src/**/*.js']) // All js files, but keyboard.module.js first.
         .pipe(noprotocol.angular({
             output: 'keyboard.js'

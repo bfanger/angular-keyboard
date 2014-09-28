@@ -1,27 +1,26 @@
 /**
- * Helper for scrolling the active (and focussed) kb-item into a viewable area.
+ * Helper for scrolling an element into the viewable area.
  */
 angular.module('keyboard').factory('kbScrollTo', function ($window) {
-    var noop = angular.noop;
 
     var duration = 150;
     // Most browsers scroll via scrollTop on the <body> element.
     var viewportNode = 'BODY';
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        viewportNode = 'HTML'; // Firefox uses the scrollTop on <html> element.
+        viewportNode = 'HTML'; // Except Firefox, which uses scrollTop on <html> element.
     }
 
     /**
-     * Change the scrollposition animated and return a function that cancels the animation
+     * Change the scrollposition animated and return a function that cancels the animation.
      *
      * @param {Element} container
      * @param {String} property 'scrollTop' or 'scrollLeft'
      * @param {Number} value
-     * @param {Boolean} animated
+     * @param {Number} duration
      * @returns {Function}
      */
-    function change(container, property, value, animated) {
-        if (animated && angular.element.prototype.animate) { // jQuery.animate is available?
+    function change(container, property, value, duration) {
+        if (duration && angular.element.prototype.animate) { // jQuery.animate is available?
             var el = angular.element(container);
             var props = {};
             props[property] = value;
@@ -31,19 +30,19 @@ angular.module('keyboard').factory('kbScrollTo', function ($window) {
             };
         } else {
             container[property] = value;
-            return noop;
+            return angular.noop;
         }
     }
 
     /**
      *
-     * @param {Element} el
+     * @param {Element} el  The DOMElement
      * @param {Object} offset  Allowed hidden
-     * @param {Boolean} animated
+     * @param {Number} duration  Duration of the animation in ms
      * @returns {Function} cancel animation
      */
-    function kbScrollTo(el, offset, animated) {
-        var cancelAnimation = noop;
+    function kbScrollTo(el, offset, duration) {
+        var cancelAnimation = angular.noop;
         var parent = el.parentElement;
         while (parent.nodeName !== viewportNode) {
             var parentStyle = getComputedStyle(parent);
@@ -85,27 +84,27 @@ angular.module('keyboard').factory('kbScrollTo', function ($window) {
         var relLeft = pos.left - parentPos.left;
 
         if (relTop + offset.top < 0) { // up
-            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, animated);
+            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop + relTop + offset.top, duration);
             relBottom += relTop;
             relTop = 0;
         } else if (relBottom + offset.bottom < 0) { // down
-            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop - relBottom + offset.bottom, animated);
+            cancelAnimation = change(parent, 'scrollTop', parent.scrollTop - relBottom + offset.bottom, duration);
             relTop += relBottom;
             relBottom = 0;
         }
         if (relLeft + offset.left < 0) { // left
-            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft + relLeft + offset.left, animated);
+            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft + relLeft + offset.left, duration);
             relRight += relLeft;
             relLeft = 0;
         } else if (relRight + offset.right < 0) { // right
-            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft - relRight + offset.right, animated);
+            cancelAnimation = change(parent, 'scrollLeft', parent.scrollLeft - relRight + offset.right, duration);
             relLeft += relRight;
             relRight = 0;
         }
         if (parent.nodeName === viewportNode) {
             return cancelAnimation;
         }
-        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, right: relTop, bottom: relBottom, left: relLeft}, animated);
+        var cancelParentAnimation = kbScrollTo(parent, {top: relTop, right: relTop, bottom: relBottom, left: relLeft}, duration);
         return function () {
             cancelAnimation();
             cancelParentAnimation();

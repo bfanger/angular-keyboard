@@ -1,19 +1,30 @@
-angular.module('keyboard').factory('KbListController', function (undefined) {
+angular.module('keyboard').factory('KbContainerController', function (undefined, $parse) {
     'use strict';
     /**
      * @class KbListController
      * @ngInject @param {jQElement} $element
      */
-    function KbListController($element) {
-        this.mode = 'list';
+    function KbContainerController($element) {
 
-        this.selected = undefined; // Selected model(s)
+        this.selected = []; // Selected kbItem(s)
+        this.multiple = false;
+
         this.active = undefined; // kbItemController of the active kb-item.
-
         this._element = $element[0];
+        this.itemAvailable = false; // New item(s) available in the DOM?
+
     }
-    angular.extend(KbListController.prototype, {
+    angular.extend(KbContainerController.prototype, {
         /** @lends kbListController */
+
+        activate: function (kbItem) {
+            this.active = kbItem;
+            kbItem.focus();
+        },
+
+        invoke: function () {
+            return false;
+        },
 
         /**
          * Select the given model.
@@ -22,29 +33,27 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
          * @param {*} model
          */
         select: function (model) {
-            if (this.mode === 'multiselect') {
+            if (this.multiple) {
                 if (this.isSelected(model) === false) {
                     this.selected.push(model);
+                    this.setModel(this.selected);
                 }
             } else {
-                this.selected = model;
+                this.selected[0] = model;
+                this.setModel(model);
             }
+
         },
         /**
          * Deselect the given model.
-         * Or in multiselect mode, removes the given model to the selection.
          * Does nothing if the given model isn't selected.
          *
          * @param {*} model
          */
         deselect: function (model) {
-            if (this.mode === 'multiselect') {
-                var index = this.selected.indexOf(model);
-                if (index !== -1) {
-                    this.selected.splice(index, 1);
-                }
-            } else if (model === this.selected) {
-                this.selected = undefined;
+            var index = this.selected.indexOf(model);
+            if (index !== -1) {
+                this.selected.splice(index, 1);
             }
         },
         /**
@@ -67,11 +76,7 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
          * @returns {Boolean}
          */
         isSelected: function (model) {
-            if (this.mode === 'multiselect') {
-                return this.selected.indexOf(model) !== -1;
-            } else {
-                return this.selected === model;
-            }
+            return (this.selected.indexOf(model) !== -1);
         },
         /**
          * Activate the previous item.
@@ -120,7 +125,6 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
          */
         _getSiblingItems: function (kbItem) {
             var element = kbItem.element[0];
-            console.log(kbItem);
             var items = this._element.querySelectorAll('[kb-item]');
             for (var i = 0; i < items.length; i++) {
                 var el = items.item(i);
@@ -146,7 +150,22 @@ angular.module('keyboard').factory('KbListController', function (undefined) {
             if (el) {
                 return el.controller('kbItem');
             }
+        },
+
+        bind: function ($scope, expression) {
+            var parsed = $parse(expression);
+            this.getModel = function (value) {
+                return parsed($scope, value);
+            };
+            this.setModel = function (value) {
+                return parsed.assign($scope, value);
+            };
+            if (this.multiple) {
+                this.selected = this.getModel() || [];
+            } else {
+                this.selected[0] = this.getModel();
+            }
         }
     });
-    return KbListController;
+    return KbContainerController;
 });
