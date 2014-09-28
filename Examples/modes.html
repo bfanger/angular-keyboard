@@ -17,12 +17,14 @@
         <div class="container">
             <h1>Angular Keyboard: kbList modes</h1>
             <div class="row">
-                <div class="col-md-4">
+
+                 <div class="col-md-4">
                     <dl class="dl-horizontal">
-                        <dt>Mode</dt><dd>kb-list</dd>
-                        <dt>Active</dt><dd class="text-ellipis">{{active.list.name || '&nbsp;' }}</dd>
+                        <dt>Directive</dt><dd>kb-list</dd>
+                        <dt>Keys</dt><dd>up, down</dd>
+                        <dt>Selected</dt><dd class="text-ellipis">{{active.list.name || '&nbsp;' }}</dd>
                     </dl>
-                    <table kb-list="active.list" class="table table-bordered table-condensed">
+                    <table kb-list ng-model="active.list" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -38,10 +40,11 @@
 
                 <div class="col-md-4">
                     <dl class="dl-horizontal">
-                        <dt>Mode</dt><dd>kb-select</dd>
+                        <dt>Directive</dt><dd>kb-select</dd>
+                        <dt>Keys</dt><dd>up, down, space</dd>
                         <dt>Selected</dt><dd class="text-ellipis">{{active.select.name || '&nbsp;'}}</dd>
                     </dl>
-                    <table kb-select="active.select" class="table table-bordered table-condensed">
+                    <table kb-select ng-model="active.select" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -54,13 +57,14 @@
                         </tbody>
                     </table>
                 </div>
-<!--
+
                 <div class="col-md-4">
                     <dl class="dl-horizontal">
-                        <dt>Mode</dt><dd>kb-select multiple</dd>
-                        <dt>Selected</dt><dd class="text-ellipis">{{active.multiselect}}</dd>
+                        <dt>Directive</dt><dd>kb-select multiple</dd>
+                        <dt>Keys</dt><dd>up, down, space</dd>
+                        <dt>Selected</dt><dd class="text-ellipis">{{active.multiselect.length}}</dd>
                     </dl>
-                    <table kb-select="active.multiselect" multiple class="table table-bordered table-condensed">
+                    <table kb-select ng-model="active.multiselect" multiple class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -73,7 +77,7 @@
                         </tbody>
                     </table>
                 </div>
--->
+
             </div>
             Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'readable' bootstrap theme.
         </div>
@@ -87,7 +91,7 @@
             var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout, $interval) {
                 var items = [];
-                for (var i = 0; i < 15; i++) {
+                for (var i = 0; i < 10; i++) {
                     items.push({
                         id: i + 1,
                         name: Faker.Name.findName()
@@ -102,9 +106,9 @@
                 $timeout(function () {
                     document.querySelector('[kb-list]').focus();
                 });
-                $interval(function () {
-                    $rootScope.items[10].name = Faker.Name.findName(); // Test model binding
-                }, 3000);
+//                $interval(function () {
+//                    $rootScope.items[10].name = Faker.Name.findName(); // Test model binding
+//                }, 3000);
             });
         </script>
     </body>

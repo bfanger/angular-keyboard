@@ -28,9 +28,9 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
                 kbItem.model = model;
             });
 
-            if (angular.isUndefined(kbContainer.active)) {
+            if (typeof kbContainer.active === 'undefined') {
                 kbContainer.active = kbItem;
-            } else if (kbContainer.isSelected(kbItem.model) && kbContainer.isSelected(kbItem.active) === false) {
+            } else if (kbContainer.isSelected(kbItem.model) && kbContainer.isSelected(kbContainer.active.model) === false) {
                 kbContainer.active = kbItem;
             }
             $scope.$watch(function () {
@@ -115,7 +115,7 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
                 $scope.$apply();
             });
             $scope.$on('$destroy', function () {
-               kbContainer.active = kbContainer.first();
+               kbContainer.active = kbContainer._first();
             });
         }
     };

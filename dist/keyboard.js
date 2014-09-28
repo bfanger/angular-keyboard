@@ -13,33 +13,51 @@ angular.module('keyboard', []);
  */
 angular.module('keyboard').constant('undefined');
 
-angular.module('keyboard').factory('KbContainerController', ["undefined", "$parse", function (undefined, $parse) {
+angular.module('keyboard').factory('KbContainerController', ["undefined", "$log", function (undefined, $log) {
     'use strict';
     /**
      * @class KbListController
      * @ngInject @param {jQElement} $element
      */
     function KbContainerController($element) {
-
+        this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;
-
         this.active = undefined; // kbItemController of the active kb-item.
         this._element = $element[0];
-        this.itemAvailable = false; // New item(s) available in the DOM?
-
     }
     KbContainerController.$inject = ["$element"];
     angular.extend(KbContainerController.prototype, {
         /** @lends kbListController */
 
-        activate: function (kbItem) {
-            this.active = kbItem;
-            kbItem.focus();
-        },
-
-        invoke: function () {
-            return false;
+        /**
+         *
+         * @param {Object} options
+         */
+        initialize: function (options) {
+            angular.extend(this, options);
+            this.ngModel.$render = function () {
+                // Change the selection to model.
+                if (this.multiple) {
+                    this.selected = this.ngModel.$viewValue;
+                    if (angular.isArray(this.selected) === false) {
+                        if (angular.isDefined(this.selected)) {
+                            $log.error(this.identifier, 'ng-model(multiple) must be an array, got:', this.selected);
+                        }
+                        this.selected = [];
+                    }
+                } else {
+                    this.selected[0] = this.ngModel.$viewValue;
+                }
+                // Activate the first item in the selection.
+                for (var i in this.selected) {
+                    var kbItem = this._locate(this.selected[i]);
+                    if (kbItem) {
+                        this.active = kbItem;
+                        break;
+                    }
+                }
+            }.bind(this);
         },
 
         /**
@@ -52,13 +70,12 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
             if (this.multiple) {
                 if (this.isSelected(model) === false) {
                     this.selected.push(model);
-                    this.setModel(this.selected);
+                    this.ngModel.$setViewValue(this.selected);
                 }
             } else {
                 this.selected[0] = model;
-                this.setModel(model);
+                this.ngModel.$setViewValue(model);
             }
-
         },
         /**
          * Deselect the given model.
@@ -94,6 +111,7 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
         isSelected: function (model) {
             return (this.selected.indexOf(model) !== -1);
         },
+
         /**
          * Activate the previous item.
          *
@@ -107,6 +125,7 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
             }
             return false;
         },
+
         /**
          * Activate the next item.
          *
@@ -120,6 +139,28 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
             }
             return false;
         },
+
+        /**
+         * Abstract method for when an item is clicked, moved to with the keys.
+         * @param {KbItemController} kbItem
+         * @param {Object} options
+         * @returns {Boolean}
+         */
+        activate: function (kbItem, options) {
+            $log.$error(this.identifier, 'activate() is not implemented');
+            return false;
+        },
+
+        /**
+         * Abstract method when an item is clicked or when space or enter is pressed.
+         * @param {KbItemController} kbItem  The active item.
+         * @returns {Boolean}
+         */
+        invoke: function (kbItem) {
+            $log.$error(this.identifier, 'invoke() is not implemented');
+            return false;
+        },
+
         /**
          * Returns the (first) kbItemController  which has the given model value.
          * @returns {KbItemController}
@@ -128,7 +169,7 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
             var items = this._element.querySelectorAll('[kb-item]');
             for (var i = 0; i < items.length; i++) {
                 var kbItem = angular.element(items.item(i)).controller('kbItem');
-                if (kbItem.getModel() === model) {
+                if (kbItem.model === model) {
                     return kbItem;
                 }
             }
@@ -158,28 +199,13 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$pars
             return {};
         },
         /**
-         * Returns the controller of the first item.
+         * Returns the first item.
          * @returns {kbItemController}
          */
-        first: function () {
+        _first: function () {
             var el = this._element.querySelector('[kb-item]');
             if (el) {
                 return el.controller('kbItem');
-            }
-        },
-
-        bind: function ($scope, expression) {
-            var parsed = $parse(expression);
-            this.getModel = function (value) {
-                return parsed($scope, value);
-            };
-            this.setModel = function (value) {
-                return parsed.assign($scope, value);
-            };
-            if (this.multiple) {
-                this.selected = this.getModel() || [];
-            } else {
-                this.selected[0] = this.getModel();
             }
         }
     });
@@ -238,9 +264,9 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
                 kbItem.model = model;
             });
 
-            if (angular.isUndefined(kbContainer.active)) {
+            if (typeof kbContainer.active === 'undefined') {
                 kbContainer.active = kbItem;
-            } else if (kbContainer.isSelected(kbItem.model) && kbContainer.isSelected(kbItem.active) === false) {
+            } else if (kbContainer.isSelected(kbItem.model) && kbContainer.isSelected(kbContainer.active.model) === false) {
                 kbContainer.active = kbItem;
             }
             $scope.$watch(function () {
@@ -325,7 +351,7 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
                 $scope.$apply();
             });
             $scope.$on('$destroy', function () {
-               kbContainer.active = kbContainer.first();
+               kbContainer.active = kbContainer._first();
             });
         }
     };
@@ -342,13 +368,25 @@ angular.module('keyboard').directive('kbList', ["KbContainerController", "$parse
 
     return {
         controller: KbContainerController,
-        require: 'kbList',
-        link: function ($scope, el, attrs, kbContainer) {
-            kbContainer.activate = function (kbItem) {
-                this.select(kbItem.model);
-                return KbContainerController.prototype.activate.apply(this, arguments);
-            };
-            kbContainer.bind($scope, attrs.kbList);
+        require: ['kbList', 'ngModel'],
+        link: function ($scope, el, attrs, controllers) {
+            var kbContainer = controllers[0];
+            kbContainer.initialize({
+                identifier: '[kb-list]',
+                ngModel: controllers[1],
+                activate: function (kbItem) {
+                    this.active = kbItem;
+                    this.select(kbItem.model);
+                    kbItem.focus();
+                },
+                invoke: function () {
+                    return false;
+                }
+
+            });
+        }
+    };
+}]);
 //            var getModal =ter = $parse(attrs.attrs);
 
 //            ngModel.$render = function () {
@@ -369,41 +407,47 @@ angular.module('keyboard').directive('kbList', ["KbContainerController", "$parse
 //                    }
 //                }
 //            };
-            $scope.$watch(function () {
-                return kbContainer.selected;
-            }, function (selected) {
-                if (kbContainer.mode === 'multiselect') {
-//                    ngModel.$setViewValue(selected);
-                } else {
-//                    ngModel.$setViewValue(selected[0]);
-                }
-            });
-        }
-    };
-}]);
+//            $scope.$watch(function () {
+//                return kbContainer.selected;
+//            }, function (selected) {
+//                if (kbContainer.mode === 'multiselect') {
+////                    ngModel.$setViewValue(selected);
+//                } else {
+////                    ngModel.$setViewValue(selected[0]);
+//                }
+//            });
+
 /**
  * kb-select directive
  *
  * Usage:
- * <div kb-select="selection"> ... <div kb-item="aItem">...</div> ... </div>
+ * <div kb-select ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
 angular.module('keyboard').directive('kbSelect', ["KbContainerController", function (KbContainerController) {
     'use strict';
 
     return {
         controller: KbContainerController,
-        require: 'kbSelect',
-        link: function ($scope, el, attrs, kbContainer) {
+        require: ['kbSelect', 'ngModel'],
+        link: function ($scope, el, attrs, controllers) {
+            var kbContainer = controllers[0];
 
-            kbContainer.invoke = function (kbItem) {
-                this.toggle(kbItem.model);
-                return true;
-            };
-
-            kbContainer.bind($scope, attrs.kbSelect);
-
-;
-
+            kbContainer.initialize({
+                identifier: '[kb-select]',
+                ngModel: controllers[1],
+                multiple: angular.isDefined(attrs.multiple),
+                activate: function (kbItem) {
+                    this.active = kbItem;
+                    kbItem.focus();
+                },
+                invoke: function (kbItem) {
+                    this.toggle(kbItem.model);
+                    return true;
+                }
+            });
+        }
+    };
+}]);
 //            ngModel.$render = function () {
 //                if (kbContainer.mode === 'multiselect') {
 //                    kbContainer.selected = angular.isArray(ngModel.$viewValue) ? ngModel.$viewValue : [];
@@ -422,18 +466,16 @@ angular.module('keyboard').directive('kbSelect', ["KbContainerController", funct
 //                    }
 //                }
 //            };
-            $scope.$watch(function () {
-                return kbContainer.selected;
-            }, function (selected) {
-                if (kbContainer.mode === 'multiselect') {
-//                    ngModel.$setViewValue(selected);
-                } else {
-//                    ngModel.$setViewValue(selected[0]);
-                }
-            });
-        }
-    };
-}]);
+//            $scope.$watch(function () {
+//                return kbContainer.selected;
+//            }, function (selected) {
+//                if (kbContainer.mode === 'multiselect') {
+////                    ngModel.$setViewValue(selected);
+//                } else {
+////                    ngModel.$setViewValue(selected[0]);
+//                }
+//            });
+
 /**
  * Focus an element, but
  */
@@ -510,7 +552,6 @@ angular.module('keyboard').factory('kbFocus', ["kbScrollTo", function (kbScrollT
  */
 angular.module('keyboard').factory('kbScrollTo', ["$window", function ($window) {
 
-    var duration = 150;
     // Most browsers scroll via scrollTop on the <body> element.
     var viewportNode = 'BODY';
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {

@@ -1,29 +1,47 @@
-angular.module('keyboard').factory('KbContainerController', function (undefined, $parse) {
+angular.module('keyboard').factory('KbContainerController', function (undefined, $log) {
     'use strict';
     /**
      * @class KbListController
      * @ngInject @param {jQElement} $element
      */
     function KbContainerController($element) {
-
+        this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;
-
         this.active = undefined; // kbItemController of the active kb-item.
         this._element = $element[0];
-        this.itemAvailable = false; // New item(s) available in the DOM?
-
     }
     angular.extend(KbContainerController.prototype, {
         /** @lends kbListController */
 
-        activate: function (kbItem) {
-            this.active = kbItem;
-            kbItem.focus();
-        },
-
-        invoke: function () {
-            return false;
+        /**
+         *
+         * @param {Object} options
+         */
+        initialize: function (options) {
+            angular.extend(this, options);
+            this.ngModel.$render = function () {
+                // Change the selection to model.
+                if (this.multiple) {
+                    this.selected = this.ngModel.$viewValue;
+                    if (angular.isArray(this.selected) === false) {
+                        if (angular.isDefined(this.selected)) {
+                            $log.error(this.identifier, 'ng-model(multiple) must be an array, got:', this.selected);
+                        }
+                        this.selected = [];
+                    }
+                } else {
+                    this.selected[0] = this.ngModel.$viewValue;
+                }
+                // Activate the first item in the selection.
+                for (var i in this.selected) {
+                    var kbItem = this._locate(this.selected[i]);
+                    if (kbItem) {
+                        this.active = kbItem;
+                        break;
+                    }
+                }
+            }.bind(this);
         },
 
         /**
@@ -36,13 +54,12 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             if (this.multiple) {
                 if (this.isSelected(model) === false) {
                     this.selected.push(model);
-                    this.setModel(this.selected);
+                    this.ngModel.$setViewValue(this.selected);
                 }
             } else {
                 this.selected[0] = model;
-                this.setModel(model);
+                this.ngModel.$setViewValue(model);
             }
-
         },
         /**
          * Deselect the given model.
@@ -78,6 +95,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
         isSelected: function (model) {
             return (this.selected.indexOf(model) !== -1);
         },
+
         /**
          * Activate the previous item.
          *
@@ -91,6 +109,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             }
             return false;
         },
+
         /**
          * Activate the next item.
          *
@@ -104,6 +123,28 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             }
             return false;
         },
+
+        /**
+         * Abstract method for when an item is clicked, moved to with the keys.
+         * @param {KbItemController} kbItem
+         * @param {Object} options
+         * @returns {Boolean}
+         */
+        activate: function (kbItem, options) {
+            $log.$error(this.identifier, 'activate() is not implemented');
+            return false;
+        },
+
+        /**
+         * Abstract method when an item is clicked or when space or enter is pressed.
+         * @param {KbItemController} kbItem  The active item.
+         * @returns {Boolean}
+         */
+        invoke: function (kbItem) {
+            $log.$error(this.identifier, 'invoke() is not implemented');
+            return false;
+        },
+
         /**
          * Returns the (first) kbItemController  which has the given model value.
          * @returns {KbItemController}
@@ -112,7 +153,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             var items = this._element.querySelectorAll('[kb-item]');
             for (var i = 0; i < items.length; i++) {
                 var kbItem = angular.element(items.item(i)).controller('kbItem');
-                if (kbItem.getModel() === model) {
+                if (kbItem.model === model) {
                     return kbItem;
                 }
             }
@@ -142,28 +183,13 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             return {};
         },
         /**
-         * Returns the controller of the first item.
+         * Returns the first item.
          * @returns {kbItemController}
          */
-        first: function () {
+        _first: function () {
             var el = this._element.querySelector('[kb-item]');
             if (el) {
                 return el.controller('kbItem');
-            }
-        },
-
-        bind: function ($scope, expression) {
-            var parsed = $parse(expression);
-            this.getModel = function (value) {
-                return parsed($scope, value);
-            };
-            this.setModel = function (value) {
-                return parsed.assign($scope, value);
-            };
-            if (this.multiple) {
-                this.selected = this.getModel() || [];
-            } else {
-                this.selected[0] = this.getModel();
             }
         }
     });

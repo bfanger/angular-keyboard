@@ -3,7 +3,6 @@
  */
 angular.module('keyboard').factory('kbScrollTo', function ($window) {
 
-    var duration = 150;
     // Most browsers scroll via scrollTop on the <body> element.
     var viewportNode = 'BODY';
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
