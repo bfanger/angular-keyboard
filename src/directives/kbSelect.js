@@ -1,27 +1,29 @@
 /**
- * kb-list directive
+ * kb-select directive
  *
  * Usage:
- * <div kb-list ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
+ * <div kb-select ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
-angular.module('keyboard').directive('kbList', function (KbContainerController, kbScroll) {
+angular.module('keyboard').directive('kbSelect', function (KbContainerController, kbScroll) {
     'use strict';
 
     return {
         controller: KbContainerController,
-        require: ['kbList', 'ngModel'],
+        require: ['kbSelect', 'ngModel'],
         link: function ($scope, el, attrs, controllers) {
             var kbContainer = controllers[0];
+
             kbContainer.initialize({
-                identifier: '[kb-list]',
+                identifier: '[kb-select]',
                 ngModel: controllers[1],
+                multiple: angular.isDefined(attrs.multiple),
                 activate: function (kbItem) {
                     this.active = kbItem;
-                    this.select(kbItem.model);
                     kbScroll.focus(kbItem.element[0]);
                 },
-                invoke: function () {
-                    return false;
+                invoke: function (kbItem) {
+                    this.toggle(kbItem.model);
+                    return true;
                 }
             });
         }

@@ -17,12 +17,14 @@
         <div class="container">
             <h1>Angular Keyboard: kbList modes</h1>
             <div class="row">
-                <div class="col-md-4" ng-repeat="mode in ['list', 'select', 'multiselect']">
+
+                 <div class="col-md-4">
                     <dl class="dl-horizontal">
-                        <dt>Mode</dt><dd>{{mode}}</dd>
-                        <dt>Selected</dt><dd class="text-ellipis">{{list[mode].name|| list[mode].length || '&nbsp;'}}</dd>
+                        <dt>Directive</dt><dd>kb-list</dd>
+                        <dt>Keys</dt><dd>up, down</dd>
+                        <dt>Selected</dt><dd class="text-ellipis">{{active.list.name || '&nbsp;' }}</dd>
                     </dl>
-                    <table kb-list="{{mode}}" ng-model="list[mode]" class="table table-bordered table-condensed">
+                    <table kb-list ng-model="active.list" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -35,6 +37,47 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="col-md-4">
+                    <dl class="dl-horizontal">
+                        <dt>Directive</dt><dd>kb-select</dd>
+                        <dt>Keys</dt><dd>up, down, space</dd>
+                        <dt>Selected</dt><dd class="text-ellipis">{{active.select.name || '&nbsp;'}}</dd>
+                    </dl>
+                    <table kb-select ng-model="active.select" class="table table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <td>Items</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr kb-item="item" ng-repeat="item in items track by item.id" kb-selected-class="info">
+                                <td>{{item.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-4">
+                    <dl class="dl-horizontal">
+                        <dt>Directive</dt><dd>kb-select multiple</dd>
+                        <dt>Keys</dt><dd>up, down, space</dd>
+                        <dt>Selected</dt><dd class="text-ellipis">{{active.multiselect.length}}</dd>
+                    </dl>
+                    <table kb-select ng-model="active.multiselect" multiple class="table table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <td>Items</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr kb-item="item" ng-repeat="item in items track by item.id" kb-selected-class="info">
+                                <td>{{item.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
             Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'readable' bootstrap theme.
         </div>
@@ -46,7 +89,7 @@
         <script src="../dist/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, $timeout) {
+            demo.run(function ($rootScope, $timeout, $interval) {
                 var items = [];
                 for (var i = 0; i < 15; i++) {
                     items.push({
@@ -55,14 +98,17 @@
                     });
                 }
                 $rootScope.items = items;
-                $rootScope.list = {
-                    list: items[0],
-                    select: items[1],
-                    multiselect: [items[2], items[3]]
+                $rootScope.active = {
+                    list: items[1],
+                    select: items[2],
+                    multiselect: [items[3], items[4]]
                 };
                 $timeout(function () {
                     document.querySelector('[kb-list]').focus();
                 });
+//                $interval(function () {
+//                    $rootScope.items[10].name = Faker.Name.findName(); // Test model binding
+//                }, 3000);
             });
         </script>
     </body>

@@ -1,0 +1,12 @@
+/**
+ * This css is NOT required for angular-keyboard.js
+ *
+ * Copy the rules you need into your css file and adjust the styling to match your site.
+ */
+
+[kb-item] {
+    cursor: pointer; /* Indicate that the kb-item is clickable. Hint: You can also do this for ng-click with the [ng-click] selector */
+}
+.kb-selected {
+    background: lightblue; /* Show with kb-item are selected */
+}
