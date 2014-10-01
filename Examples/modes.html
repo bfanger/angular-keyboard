@@ -20,11 +20,11 @@
 
                  <div class="col-md-4">
                     <dl class="dl-horizontal">
-                        <dt>Directive</dt><dd>kb-list</dd>
+                        <dt>Directive</dt><dd>kb-list kb-cyclic</dd>
                         <dt>Keys</dt><dd>up, down</dd>
                         <dt>Selected</dt><dd class="text-ellipis">{{active.list.name || '&nbsp;' }}</dd>
                     </dl>
-                    <table kb-list ng-model="active.list" class="table table-bordered table-condensed">
+                    <table kb-list kb-cyclic ng-model="active.list" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -44,7 +44,7 @@
                         <dt>Keys</dt><dd>up, down, space</dd>
                         <dt>Selected</dt><dd class="text-ellipis">{{active.select.name || '&nbsp;'}}</dd>
                     </dl>
-                    <table kb-select ng-model="active.select" class="table table-bordered table-condensed">
+                    <table kb-select ng-model="active.select" kb-reached-end="$log.log('No more items')" kb-reached-begin="$log.log('You\'re already at the top')" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
                                 <td>Items</td>
@@ -89,7 +89,8 @@
         <script src="../dist/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, $timeout, $interval) {
+            demo.run(function ($rootScope, $timeout, $interval, $log) {
+                $rootScope.$log = $log;
                 var items = [];
                 for (var i = 0; i < 15; i++) {
                     items.push({

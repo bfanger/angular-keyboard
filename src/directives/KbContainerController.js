@@ -9,6 +9,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
         this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;
+        this.cyclic = false;
         this.active = undefined; // kbItemController of the active kb-item.
         this._element = $element[0];
     }
@@ -20,6 +21,8 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
          * @param {Object} options
          */
         initialize: function (options) {
+            this.multiple = angular.isDefined(options.attrs.multiple);
+            this.cyclic = angular.isDefined(options.attrs.kbCyclic);
             angular.extend(this, options);
             this.ngModel.$render = function () {
                 // Change the selection to model.
@@ -190,7 +193,17 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
         _first: function () {
             var el = this._element.querySelector('[kb-item]');
             if (el) {
-                return el.controller('kbItem');
+                return angular.element(el).controller('kbItem');
+            }
+        },
+        /**
+         * Returns the first item.
+         * @returns {kbItemController}
+         */
+        _last: function () {
+            var nodes = this._element.querySelectorAll('[kb-item]');
+            if (nodes.length) {
+                return angular.element(nodes[nodes.length - 1]).controller('kbItem');
             }
         }
     });

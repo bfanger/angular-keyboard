@@ -16,7 +16,7 @@ angular.module('keyboard').directive('kbSelect', function (KbContainerController
             kbContainer.initialize({
                 identifier: '[kb-select]',
                 ngModel: controllers[1],
-                multiple: angular.isDefined(attrs.multiple),
+                attrs: attrs,
                 activate: function (kbItem) {
                     this.active = kbItem;
                     kbScroll.focus(kbItem.element[0]);

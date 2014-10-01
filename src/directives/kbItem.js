@@ -101,6 +101,36 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
                         kbContainer.activate(siblings.next);
                         changed = true;
                     }
+                    if (changed === false && (!siblings.next || !siblings.previous)) {
+                        // Detect if we reached the end/begin.
+                        var key = e.which;
+                        var trigger = false;
+                        if (e.which <= 38) {
+                            key += 2;
+                        } else {
+                            key -= 2;
+                        }
+                        // Check distance in the oppositie direction
+                        if (siblings.next && distance(directions[key], currentRect, siblings.next.element[0].getBoundingClientRect())) {
+                            if (kbContainer.cyclic) {
+                                kbContainer.activate(kbContainer._last());
+                                changed = true;
+                            } else {
+                                trigger = 'kbReachedBegin';
+                            }
+                        }
+                        if (siblings.previous && distance(directions[key], currentRect, siblings.previous.element[0].getBoundingClientRect())) {
+                            if (kbContainer.cyclic) {
+                                kbContainer.activate(kbContainer._first());
+                                changed = true;
+                            } else {
+                                trigger = 'kbReachedEnd';
+                            }
+                        }
+                        if (trigger && kbContainer.attrs[trigger]) { // Trigger kb-reached-end and kb-reached-begin events
+                            angular.element(kbContainer._element).scope().$eval(kbContainer.attrs[trigger], { $event: e});
+                        }
+                    }
                 } else if (e.which === 32 || e.which === 13) { // Space || Enter
                     changed = kbContainer.invoke(kbItem);
                 }
