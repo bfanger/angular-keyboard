@@ -14,6 +14,7 @@ Keyboard behavior for AngularJS Webapps.
 
 * [kbList modes demo](http://bfanger.github.io/angular-keyboard/Examples/modes.html)
 * [Scroll and orientation demo](http://bfanger.github.io/angular-keyboard/Examples/orientation.html)
+* [kbFocus demo](http://bfanger.github.io/angular-keyboard/Examples/focus.html)
 
 ## Installation
 
@@ -30,7 +31,7 @@ angular.module('myApp', ['keyboard']);
 
 ### kbList
 
-The kb-item can selected using the arrow keys and by clicking on the item.
+A kb-item in a kb-list can selected using the arrow keys and by clicking on the kb-item.
 
 #### Example
 
@@ -53,7 +54,7 @@ Example styling
 
 ### kbSelect
 
-the kb-item can activated using the arrow keys but is selected (and deselected) by pressing 'space' or 'enter' keys.
+A kb-item in a kb-select can activated using the arrow keys but is selected (and deselected) by pressing 'space' or 'enter' keys or clicking an the kb-item.
 
 #### Example
 
@@ -61,6 +62,29 @@ the kb-item can activated using the arrow keys but is selected (and deselected) 
     <div kb-select ng-model="selectedItem" ng-repeat="item in items">
         <div kb-item="item">{{item.title}}</div>
     </div>
+```
+
+### kbFocus
+
+Setting or reading the focus via a service.
+
+```html
+    <input type="email" kb-focus="label">
+```
+
+```js
+app.controller('MyCtrl', function($scope, $kbFocus) {
+    $scope.someAction = function() {
+        kbFocus('label');
+    };
+});
+```
+
+### kbAutofocus
+Set the autofocus attribute based on an expression.
+
+```html
+    <input type="password" kb-autofocus="email != ''">
 ```
 
 ## Development

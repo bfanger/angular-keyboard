@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html ng-app="demo">
+    <head>
+        <title>kbFocus demo - Angular Keyboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../dist/keyboard.example.css">
+        <link rel="stylesheet" href="http://bootswatch.com/spacelab/bootstrap.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Angular Keyboard: kbFocus</h1>
+            <br>
+            <dl class="dl-horizontal">
+                <dt>autofocus:</dt><dd>{{ autofocus }}</dd>
+                <dt>current focus:</dt><dd>{{ kbFocus() }}</dd>
+            </dl>
+            <div class="well">
+                <form class="form-horizontal" ng-cloak>
+                    <fieldset>
+                        <legend>Legend</legend>
+                        <div class="form-group">
+                            <label for="inputEmail" class="col-lg-2 control-label">Email</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" id="inputEmail" placeholder="Email" kb-focus="email" kb-autofocus="autofocus == 'email'">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword" class="col-lg-2 control-label">Password</label>
+                            <div class="col-lg-10">
+                                <input type="password" class="form-control" id="inputPassword" placeholder="Password" kb-focus="password" kb-autofocus="autofocus == 'password'">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"> Checkbox
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <button ng-click="kbFocus('email')" class="btn btn-primary" kb-focus="button">Focus email field</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            Thanks to <a href="https://github.com/goodeggs/ng-focus-on" target="_blank">ng-focus-on</a> for inspiration and <a href="http://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'spacelab' bootstrap theme.
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/0.7.2/MinFaker.js"></script>
+        <!--<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.js"></script>
+
+        <script src="../dist/keyboard.js"></script>
+        <script>
+            var demo = angular.module('demo', ['keyboard']);
+            demo.run(function ($rootScope, kbFocus) {
+                $rootScope.kbFocus = kbFocus;
+
+                $rootScope.autofocus = (Math.random() > 0.5) ? 'email' : 'password';
+            });
+        </script>
+    </body>
+</html>
