@@ -10,6 +10,7 @@
         "navigation",
         "scroll",
         "listview",
+        "focus",
         "angularjs"
     ],
     "license": "MIT",

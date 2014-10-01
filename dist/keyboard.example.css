@@ -4,17 +4,8 @@
  * Copy the rules you need into your css file and adjust the styling to match your site.
  */
 
-[kb-list]:focus {
-    outline: none; /* Hide the default browser outline on the collection */
-}
 [kb-item] {
     cursor: pointer; /* Indicate that the kb-item is clickable. Hint: You can also do this for ng-click with the [ng-click] selector */
-}
-.kb-focus {
-    outline: 2px dotted blue; /* Show which kb-item element has focus */
-}
-.kb-focus:not(*:root) {
-    outline: 5px auto -webkit-focus-ring-color; /* ... in webkit style */
 }
 .kb-selected {
     background: lightblue; /* Show with kb-item are selected */

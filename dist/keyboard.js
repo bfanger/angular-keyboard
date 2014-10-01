@@ -7,7 +7,9 @@
  * Inspired by: Apple Mail
  * Implementation inspirated by: WinJS ListView http://try.buildwinjs.com/pages/listview/options/default.html
  */
-angular.module('keyboard', []);
+angular.module('keyboard.focus', []);
+angular.module('keyboard', ['keyboard.focus']);
+
 /**
  * Register 'undefined' with the `undefined` value.
  */
@@ -24,6 +26,7 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$log"
         this.ngModel = undefined;
         this.selected = []; // Selected kbItem(s)
         this.multiple = false;
+        this.cyclic = false;
         this.active = undefined; // kbItemController of the active kb-item.
         this._element = $element[0];
     }
@@ -36,6 +39,8 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$log"
          * @param {Object} options
          */
         initialize: function (options) {
+            this.multiple = angular.isDefined(options.attrs.multiple);
+            this.cyclic = angular.isDefined(options.attrs.kbCyclic);
             angular.extend(this, options);
             this.ngModel.$render = function () {
                 // Change the selection to model.
@@ -206,7 +211,17 @@ angular.module('keyboard').factory('KbContainerController', ["undefined", "$log"
         _first: function () {
             var el = this._element.querySelector('[kb-item]');
             if (el) {
-                return el.controller('kbItem');
+                return angular.element(el).controller('kbItem');
+            }
+        },
+        /**
+         * Returns the first item.
+         * @returns {kbItemController}
+         */
+        _last: function () {
+            var nodes = this._element.querySelectorAll('[kb-item]');
+            if (nodes.length) {
+                return angular.element(nodes[nodes.length - 1]).controller('kbItem');
             }
         }
     });
@@ -227,6 +242,59 @@ angular.module('keyboard').factory('KbItemController', ["kbScroll", "undefined",
 
 }]);
 
+/**
+ * Set the autofocus based on an expression.
+ *
+ * Similar to ng-disabled: https://docs.angularjs.org/api/ng/directive/ngDisabled
+ *
+ * Usage:
+ * <input type="email" kb-autofocus="email == ''" />
+ */
+angular.module('keyboard.focus').directive('kbFocus', ["kbFocus", "$log", function (kbFocus, $log) {
+    'use strict';
+    return function ($scope, el, attrs) {
+        $scope.$watch(attrs.kbAutofocus, function (value) {
+            el.prop('autofocus', !!value);
+        });
+    };
+}]);
+/**
+ * Control focus based on label with the kbFocus service.
+ *
+ * Inspired by ng-focus-on
+ * @link https://github.com/goodeggs/ng-focus-on
+
+ * Usage:
+ * <input type="text" kb-focus="label" />
+ */
+angular.module('keyboard.focus').directive('kbFocus', ["kbFocus", "$log", function (kbFocus, $log) {
+    'use strict';
+    return function ($scope, el, attrs) {
+        $scope.$watch(kbFocus.get, function (label) {
+            if (label === attrs.kbFocus) {
+                if (label === '') {
+                    $log.error('[kb-focus] Invalid label in', el[0]);
+                } else {
+                    el[0].focus();
+                }
+            }
+        });
+        el.on('focus', function () {
+            kbFocus(attrs.kbFocus);
+            if (!$scope.$root.$$phase) {
+                $scope.$apply();
+            }
+        });
+        el.on('blur', function () {
+            if (kbFocus.get() === attrs.kbFocus) {
+                kbFocus.reset();
+                if (!$scope.$root.$$phase) {
+                    $scope.$apply();
+                }
+            }
+        });
+    };
+}]);
 /**
  * kb-item
  */
@@ -330,6 +398,36 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
                         kbContainer.activate(siblings.next);
                         changed = true;
                     }
+                    if (changed === false && (!siblings.next || !siblings.previous)) {
+                        // Detect if we reached the end/begin.
+                        var key = e.which;
+                        var trigger = false;
+                        if (e.which <= 38) {
+                            key += 2;
+                        } else {
+                            key -= 2;
+                        }
+                        // Check distance in the oppositie direction
+                        if (siblings.next && distance(directions[key], currentRect, siblings.next.element[0].getBoundingClientRect())) {
+                            if (kbContainer.cyclic) {
+                                kbContainer.activate(kbContainer._last());
+                                changed = true;
+                            } else {
+                                trigger = 'kbReachedBegin';
+                            }
+                        }
+                        if (siblings.previous && distance(directions[key], currentRect, siblings.previous.element[0].getBoundingClientRect())) {
+                            if (kbContainer.cyclic) {
+                                kbContainer.activate(kbContainer._first());
+                                changed = true;
+                            } else {
+                                trigger = 'kbReachedEnd';
+                            }
+                        }
+                        if (trigger && kbContainer.attrs[trigger]) { // Trigger kb-reached-end and kb-reached-begin events
+                            angular.element(kbContainer._element).scope().$eval(kbContainer.attrs[trigger], { $event: e});
+                        }
+                    }
                 } else if (e.which === 32 || e.which === 13) { // Space || Enter
                     changed = kbContainer.invoke(kbItem);
                 }
@@ -367,6 +465,7 @@ angular.module('keyboard').directive('kbList', ["KbContainerController", "kbScro
             kbContainer.initialize({
                 identifier: '[kb-list]',
                 ngModel: controllers[1],
+                attrs: attrs,
                 activate: function (kbItem) {
                     this.active = kbItem;
                     this.select(kbItem.model);
@@ -397,7 +496,7 @@ angular.module('keyboard').directive('kbSelect', ["KbContainerController", "kbSc
             kbContainer.initialize({
                 identifier: '[kb-select]',
                 ngModel: controllers[1],
-                multiple: angular.isDefined(attrs.multiple),
+                attrs: attrs,
                 activate: function (kbItem) {
                     this.active = kbItem;
                     kbScroll.focus(kbItem.element[0]);
@@ -410,6 +509,48 @@ angular.module('keyboard').directive('kbSelect', ["KbContainerController", "kbSc
         }
     };
 }]);
+/**
+ * Service for setting the focus on elements with the kb-focus directive.
+ *
+ * Inspired by ng-focus-on
+ * @link https://github.com/goodeggs/ng-focus-on
+ *
+ * Usage:
+ * kbFocus('email'); // set focus
+ * kbFocus(); // get current focus
+ */
+angular.module('keyboard.focus').factory('kbFocus', ["$log", function ($log) {
+    var _label = ''; // Current focussed label
+
+    /**
+     * Getter and setter for the focus.
+     *
+     * @param {String} label
+     * @returns {String}
+     */
+    var kbFocus = function (label) {
+        if (arguments.length === 0) {
+            return _label;
+        }
+        kbFocus.set(label);
+    };
+    kbFocus.get = function () {
+        return _label;
+    };
+    kbFocus.set = function (label) {
+        if (typeof label === 'string') {
+            _label = label;
+        } else {
+            $log.error('[kbFocus] label must be a string, got', label);
+        }
+    };
+    kbFocus.reset = function () {
+        _label = '';
+    };
+    return kbFocus;
+}]);
+
+
 /**
  * Helper for scrolling an element into the viewable area.
  *

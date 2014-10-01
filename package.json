@@ -15,6 +15,7 @@
     "keyboard",
     "behavior",
     "scroll",
+    "focus",
     "listview"
   ],
   "author": "bfanger@gmail.com",
