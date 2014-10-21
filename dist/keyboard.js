@@ -306,6 +306,8 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
         link: function ($scope, el, attrs, controllers) {
             var kbItem = controllers[0];
             var kbContainer = controllers[1];
+            var tagName = el[0].tagName;
+
             for (var i = 1; i < controllers.length; i++) {
                 if (controllers[i]) {
                     kbContainer = controllers[i];
@@ -347,7 +349,7 @@ angular.module('keyboard').directive('kbItem', ["KbItemController", "$animate", 
                     $animate.addClass(el, activeClass);
                 } else {
                     $animate.removeClass(el, activeClass);
-                    if (el.is('a') || el.is('button')) {
+                    if (tagName === 'A' || tagName === 'BUTTON') {
                         el.attr('tabindex', 0);
                     } else {
                         el.removeAttr('tabindex');
