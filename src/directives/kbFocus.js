@@ -3,7 +3,7 @@
  *
  * Inspired by ng-focus-on
  * @link https://github.com/goodeggs/ng-focus-on
-
+ *
  * Usage:
  * <input type="text" kb-focus="label" />
  */
@@ -16,6 +16,11 @@ angular.module('keyboard.focus').directive('kbFocus', function (kbFocus, $log) {
                     $log.error('[kb-focus] Invalid label in', el[0]);
                 } else {
                     el[0].focus();
+                    if (document.activeElement !== el[0]) { // focus() failed?
+                        setTimeout(function () { // maybe the element was hidden (display:none)
+                            el[0].focus(); // try one more time.
+                        });
+                    }
                 }
             }
         });

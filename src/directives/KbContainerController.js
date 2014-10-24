@@ -24,28 +24,30 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
             this.multiple = angular.isDefined(options.attrs.multiple);
             this.cyclic = angular.isDefined(options.attrs.kbCyclic);
             angular.extend(this, options);
-            this.ngModel.$render = function () {
-                // Change the selection to model.
-                if (this.multiple) {
-                    this.selected = this.ngModel.$viewValue;
-                    if (angular.isArray(this.selected) === false) {
-                        if (angular.isDefined(this.selected)) {
-                            $log.error(this.identifier, 'ng-model(multiple) must be an array, got:', this.selected);
+            if (this.ngModel) {
+                this.ngModel.$render = function () {
+                    // Change the selection to model.
+                    if (this.multiple) {
+                        this.selected = this.ngModel.$viewValue;
+                        if (angular.isArray(this.selected) === false) {
+                            if (angular.isDefined(this.selected)) {
+                                $log.error(this.identifier, 'ng-model(multiple) must be an array, got:', this.selected);
+                            }
+                            this.selected = [];
                         }
-                        this.selected = [];
+                    } else {
+                        this.selected[0] = this.ngModel.$viewValue;
                     }
-                } else {
-                    this.selected[0] = this.ngModel.$viewValue;
-                }
-                // Activate the first item in the selection.
-                for (var i in this.selected) {
-                    var kbItem = this._locate(this.selected[i]);
-                    if (kbItem) {
-                        this.active = kbItem;
-                        break;
+                    // Activate the first item in the selection.
+                    for (var i in this.selected) {
+                        var kbItem = this._locate(this.selected[i]);
+                        if (kbItem) {
+                            this.active = kbItem;
+                            break;
+                        }
                     }
-                }
-            }.bind(this);
+                }.bind(this);
+            }
         },
 
         /**
@@ -55,6 +57,9 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
          * @param {*} model
          */
         select: function (model) {
+            if (!this.ngModel) {
+                return; // A kb-item can't be selected without a ng-model on the container element.
+            }
             if (this.multiple) {
                 if (this.isSelected(model) === false) {
                     this.selected.push(model);

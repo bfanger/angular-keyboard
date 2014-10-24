@@ -9,7 +9,7 @@ angular.module('keyboard').directive('kbList', function (KbContainerController, 
 
     return {
         controller: KbContainerController,
-        require: ['kbList', 'ngModel'],
+        require: ['kbList', '?ngModel'],
         link: function ($scope, el, attrs, controllers) {
             var kbContainer = controllers[0];
             kbContainer.initialize({
