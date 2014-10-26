@@ -9,7 +9,7 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
         link: function ($scope, el, attrs, controllers) {
             var kbItem = controllers[0];
             var kbContainer = controllers[1];
-            var tagName = el[0].tagName;
+            var isTabbable = (el[0].tagName === 'A' || el[0].tagName === 'BUTTON' || el[0].tagName === 'AREA');
 
             for (var i = 1; i < controllers.length; i++) {
                 if (controllers[i]) {
@@ -52,8 +52,8 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
                     $animate.addClass(el, activeClass);
                 } else {
                     $animate.removeClass(el, activeClass);
-                    if (tagName === 'A' || tagName === 'BUTTON') {
-                        el.attr('tabindex', 0);
+                    if (isTabbable) {
+                        el.attr('tabindex', -1);
                     } else {
                         el.removeAttr('tabindex');
                     }

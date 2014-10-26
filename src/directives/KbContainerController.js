@@ -77,10 +77,19 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
          * @param {*} model
          */
         deselect: function (model) {
+            if (!this.ngModel) {
+                return;
+            }
             var index = this.selected.indexOf(model);
             if (index !== -1) {
                 this.selected.splice(index, 1);
+                if (this.multiple) {
+                    this.ngModel.$setViewValue(this.selected);
+                } else {
+                    this.ngModel.$setViewValue(undefined);
+                }
             }
+
         },
         /**
          * Select or deselect the given model.
