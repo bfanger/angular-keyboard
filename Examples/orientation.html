@@ -88,13 +88,10 @@
             Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the ui-dark theme.
         </p>
 
-
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/0.7.2/MinFaker.js"></script>
-        <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"></script>
-
-        <script src="../dist/keyboard.js"></script>
+        <script src="../node_modules/faker/build/build/faker.min.js"></script>
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="../node_modules/angular/angular.min.js"></script>
+        <script src="../bower-angular-keyboard/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
             demo.run(function ($rootScope, $timeout) {
@@ -102,8 +99,8 @@
                 for (var i = 0; i < 30; i++) {
                     items.push({
                         id: i + 1,
-                        avatar: Faker.Image.avatar(),
-                        name: Faker.Name.findName()
+                        avatar: faker.image.avatar(),
+                        name: faker.name.findName()
                     });
                 }
                 $rootScope.items = items;

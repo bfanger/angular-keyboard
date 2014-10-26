@@ -18,10 +18,19 @@ Keyboard behavior for AngularJS Webapps.
 
 ## Installation
 
-Download or install via bower:
-`bower install angular-keyboard`
+### bower
 
-Include the `dist/keyboard.min.js` script and add 'keyboard' as dependancy.
+```shell
+bower install angular
+```
+
+Then add a `<script>` to your `index.html`:
+
+```html
+<script src="/bower_components/angular-keyboard/angular-keyboard.min.js"></script>
+```
+
+And add the 'keyboard' module as dependancy.
 
 ```js
 angular.module('myApp', ['keyboard']);
@@ -90,11 +99,7 @@ Set the autofocus attribute based on an expression.
 ## Development
 
 * Install [node.js](http://nodejs.org/)
-* Install global dev dependencies: `npm install -g bower gulp`
-* Install local dev dependencies: `npm install && bower install` in repository directory
+* Install gulp: `npm install -g bower gulp`
+* Install dependencies: `npm install` in the repository directory.
 * `gulp build` to build
 * `gulp watch` for building & livereload on every change.
-
-## Contributing
-
-When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.
