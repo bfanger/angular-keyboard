@@ -12,9 +12,10 @@ Keyboard behavior for AngularJS Webapps.
 
 ## Demos
 
-* [kbList modes demo](http://bfanger.github.io/angular-keyboard/Examples/modes.html)
-* [Scroll and orientation demo](http://bfanger.github.io/angular-keyboard/Examples/orientation.html)
-* [kbFocus demo](http://bfanger.github.io/angular-keyboard/Examples/focus.html)
+* [kbList & kbSelect demo](http://angular-keyboard.herokuapp.com/example-modes.html)
+* [Scroll and orientation demo](http://angular-keyboard.herokuapp.com/example-orientation.html)
+* [kbFocus demo](angular-keyboard.herokuapp.com/example-focus.html)
+* [kbInvoke demo](angular-keyboard.herokuapp.com/example-menu.html)
 
 ## Installation
 
