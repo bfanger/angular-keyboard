@@ -14,8 +14,8 @@ Keyboard behavior for AngularJS Webapps.
 
 * [kbList & kbSelect demo](http://angular-keyboard.herokuapp.com/example-modes.html)
 * [Scroll and orientation demo](http://angular-keyboard.herokuapp.com/example-orientation.html)
-* [kbFocus demo](angular-keyboard.herokuapp.com/example-focus.html)
-* [kbInvoke demo](angular-keyboard.herokuapp.com/example-menu.html)
+* [kbFocus demo](http://angular-keyboard.herokuapp.com/example-focus.html)
+* [kbInvoke demo](http://angular-keyboard.herokuapp.com/example-menu.html)
 
 ## Installation
 
@@ -41,14 +41,14 @@ angular.module('myApp', ['keyboard']);
 
 ### kbList
 
-A kb-item in a kb-list can selected using the arrow keys and by clicking on the kb-item.
+A `kb-item` in a `kb-list` can selected using the arrow keys and by clicking on the `kb-item`.
 
 #### Example
 
 ```html
-    <div kb-list ng-model="selectedItem" ng-repeat="item in items">
-        <div kb-item="item">{{item.title}}</div>
-    </div>
+<div kb-list ng-model="selectedItem" ng-repeat="item in items">
+  <div kb-item="item">{{item.title}}</div>
+</div>
 ```
 
 Example styling
@@ -64,14 +64,14 @@ Example styling
 
 ### kbSelect
 
-A kb-item in a kb-select can activated using the arrow keys but is selected (and deselected) by pressing 'space' or 'enter' keys or clicking an the kb-item.
+A `kb-item` in a `kb-select` can activated using the arrow keys but is selected (and deselected) by pressing 'space' or 'enter' keys or clicking an the `kb-item`.
 
 #### Example
 
 ```html
-    <div kb-select ng-model="selectedItem" ng-repeat="item in items">
-        <div kb-item="item">{{item.title}}</div>
-    </div>
+<div kb-select ng-model="selectedItem" ng-repeat="item in items">
+  <div kb-item="item">{{item.title}}</div>
+</div>
 ```
 
 ### kbFocus
@@ -79,7 +79,7 @@ A kb-item in a kb-select can activated using the arrow keys but is selected (and
 Setting or reading the focus via a service.
 
 ```html
-    <input type="email" kb-focus="label">
+<input type="email" kb-focus="label">
 ```
 
 ```js
@@ -91,10 +91,21 @@ app.controller('MyCtrl', function($scope, $kbFocus) {
 ```
 
 ### kbAutofocus
+
 Set the autofocus attribute based on an expression.
 
 ```html
-    <input type="password" kb-autofocus="email != ''">
+<input type="password" kb-autofocus="email != ''">
+```
+
+### kbInvoke
+
+Add event handler to `kb-item`. Handles space and enter keypresses, and mouse clicks.
+
+```html
+<ul kb-list ng-model="selectedItem" ng-repeat="item in items">
+  <li kb-item="item" kb-invoke="select(item)">{{item.title}}</li>
+</ul>
 ```
 
 ## Development
