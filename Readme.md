@@ -100,11 +100,11 @@ Set the autofocus attribute based on an expression.
 
 ### kbInvoke
 
-Add event handler to `kb-item`. Handles space and enter keypresses, and mouse clicks.
+An event handler for `kb-item`. Triggered when clicked or (when focused) with space and enter keys.
 
 ```html
-<ul kb-list ng-model="selectedItem" ng-repeat="item in items">
-  <li kb-item="item" kb-invoke="select(item)">{{item.title}}</li>
+<ul kb-list>
+  <li ng-repeat="item in items" kb-item kb-invoke="openPopup(item.href)">{{item.title}}</li>
 </ul>
 ```
 
