@@ -22,7 +22,7 @@ Keyboard behavior for AngularJS Webapps.
 ### bower
 
 ```shell
-bower install angular
+bower install angular-keyboard --save
 ```
 
 Then add a `<script>` to your `index.html`:
@@ -31,7 +31,7 @@ Then add a `<script>` to your `index.html`:
 <script src="/bower_components/angular-keyboard/angular-keyboard.min.js"></script>
 ```
 
-And add the 'keyboard' module as dependancy.
+And add the 'keyboard' module as dependency.
 
 ```js
 angular.module('myApp', ['keyboard']);
@@ -83,7 +83,7 @@ Setting or reading the focus via a service.
 ```
 
 ```js
-app.controller('MyCtrl', function($scope, $kbFocus) {
+app.controller('MyCtrl', function($scope, kbFocus) {
     $scope.someAction = function() {
         kbFocus('label');
     };
