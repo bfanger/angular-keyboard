@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="demo">
+<html ng-app="demo" ng-strict-di>
     <head>
         <title>kb-list demo - Angular Keyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -90,7 +90,7 @@
         <script src="js/angular-keyboard/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, $timeout, $interval, $log) {
+            demo.run(['$rootScope', '$timeout', '$interval', '$log', function ($rootScope, $timeout, $interval, $log) {
                 $rootScope.$log = $log;
                 var items = [];
                 for (var i = 0; i < 15; i++) {
@@ -111,7 +111,7 @@
 //                $interval(function () {
 //                    $rootScope.items[10].name = Faker.Name.findName(); // Test model binding
 //                }, 3000);
-            });
+            }]);
         </script>
     </body>
 </html>

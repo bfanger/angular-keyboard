@@ -2,7 +2,6 @@
  * kb-item
  */
 angular.module('keyboard').directive('kbItem', function (KbItemController, $animate, $log) {
-    'use strict';
     return {
         controller: KbItemController,
         require: ['kbItem', '?^kbList', '?^kbSelect'],

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="demo">
+<html ng-app="demo" ng-strict-di>
     <head>
         <title>kbFocus demo - Angular Keyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -49,11 +49,11 @@
         <script src="js/angular-keyboard/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, kbFocus) {
+            demo.run(['$rootScope', 'kbFocus', function ($rootScope, kbFocus) {
                 $rootScope.kbFocus = kbFocus;
 
                 $rootScope.autofocus = (Math.random() > 0.5) ? 'email' : 'password';
-            });
+            }]);
         </script>
     </body>
 </html>

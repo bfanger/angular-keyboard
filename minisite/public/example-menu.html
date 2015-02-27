@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="http://bootswatch.com/sandstone/bootstrap.css">
     </head>
-    <body ng-app="demo">
+    <body ng-app="demo" ng-strict-di>
         <div class="container">
             <h1>Angular Keyboard: kb-invoke</h1>
             <div class="row">
@@ -54,7 +54,7 @@
         <script src="js/angular-keyboard/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, kbFocus) {
+            demo.run(['$rootScope', 'kbFocus', function ($rootScope, kbFocus) {
                 $rootScope.messages = [];
                 $rootScope.menu = {};
                 $rootScope.toggleMenu = function () {
@@ -73,7 +73,7 @@
                     });
                 };
 //                $rootScope.toggleMenu();
-            });
+            }]);
         </script>
     </body>
 </html>

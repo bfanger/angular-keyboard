@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="demo">
+<html ng-app="demo" ng-strict-di>
     <head>
         <title>Scroll and orientation - Angular Keyboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,13 +88,13 @@
             Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the ui-dark theme.
         </p>
 
-        <script src="js/faker.min.js"></script>
-        <script src="js/jquery.min.js"></script>
-        <script src="js/angular.min.js"></script>
-        <script src="js/keyboard.js"></script>
+        <script src="js/faker/faker.min.js"></script>
+        <script src="js/jquery/jquery.min.js"></script>
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular-keyboard/keyboard.js"></script>
         <script>
             var demo = angular.module('demo', ['keyboard']);
-            demo.run(function ($rootScope, $timeout) {
+            demo.run(['$rootScope', '$timeout', function ($rootScope, $timeout) {
                 var items = [];
                 for (var i = 0; i < 30; i++) {
                     items.push({
@@ -111,7 +111,7 @@
                 $timeout(function () {
                     document.querySelector('[kb-list]').focus();
                 }, 100);
-            });
+            }]);
         </script>
     </body>
 </html>

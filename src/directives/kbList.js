@@ -5,8 +5,6 @@
  * <div kb-list ng-model="selection"> ... <div kb-item="aItem">...</div> ... </div>
  */
 angular.module('keyboard').directive('kbList', function (KbContainerController, kbScroll) {
-    'use strict';
-
     return {
         controller: KbContainerController,
         require: ['kbList', '?ngModel'],

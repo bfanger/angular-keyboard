@@ -7,11 +7,20 @@ var livereload = require('gulp-livereload');
  * Create the angular-keyboard.js and angular-keyboard.min.js files.
  */
 gulp.task('build', function () {
-    return gulp
+    gulp
         .src(['src/keyboard.module.js', 'src/**/*.js']) // All *.js files, but keyboard.module.js first.
         .pipe(noprotocol.angular({
-            output: 'keyboard.js'
-        })).pipe(gulp.dest('bower-angular-keyboard/'));
+            bundle: 'keyboard.min.js'
+        }))
+        .pipe(gulp.dest('bower-angular-keyboard/'));
+
+    gulp
+        .src(['src/keyboard.module.js', 'src/**/*.js'])
+        .pipe(noprotocol.angular({
+            bundle: 'keyboard.js',
+            minify: false
+        }))
+        .pipe(gulp.dest('bower-angular-keyboard/'));
 });
 /**
  * Watch for file-changes, start a livereload server and rebuild on every change.

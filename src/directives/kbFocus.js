@@ -8,7 +8,6 @@
  * <input type="text" kb-focus="label" />
  */
 angular.module('keyboard.focus').directive('kbFocus', function (kbFocus, $log) {
-    'use strict';
     return function ($scope, el, attrs) {
         $scope.$watch(kbFocus.get, function (label) {
             if (label === attrs.kbFocus) {

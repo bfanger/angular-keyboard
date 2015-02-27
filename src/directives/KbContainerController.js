@@ -1,8 +1,7 @@
 angular.module('keyboard').factory('KbContainerController', function (undefined, $log) {
-    'use strict';
     /**
      * @class KbListController
-     * @ngInject @param {jQElement} $element
+     * @param {jQElement} $element
      */
     function KbContainerController($element) {
         this.identifier = '[kb-container]';
@@ -13,6 +12,7 @@ angular.module('keyboard').factory('KbContainerController', function (undefined,
         this.active = undefined; // kbItemController of the active kb-item.
         this._element = $element[0];
     }
+    KbContainerController.$inject = ['$element'];
     angular.extend(KbContainerController.prototype, {
         /** @lends kbListController */
 
