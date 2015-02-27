@@ -46,8 +46,8 @@ A `kb-item` in a `kb-list` can selected using the arrow keys and by clicking on 
 #### Example
 
 ```html
-<div kb-list ng-model="selectedItem" ng-repeat="item in items">
-  <div kb-item="item">{{item.title}}</div>
+<div kb-list ng-model="vm.selected">
+  <div ng-repeat="item in items" kb-item="item">{{item.title}}</div>
 </div>
 ```
 
@@ -69,8 +69,8 @@ A `kb-item` in a `kb-select` can activated using the arrow keys but is selected 
 #### Example
 
 ```html
-<div kb-select ng-model="selectedItem" ng-repeat="item in items">
-  <div kb-item="item">{{item.title}}</div>
+<div kb-select ng-model="vm.selected">
+  <div ng-repeat="item in items" kb-item="item">{{item.title}}</div>
 </div>
 ```
 
