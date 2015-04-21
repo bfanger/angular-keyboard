@@ -1,6 +1,7 @@
 {
   "name": "angular-keyboard",
   "description": "Keyboard behavior for AngularJS Webapps",
+  "license": "MIT",
   "dependencies": {
     "angular": "^1.3.14",
     "express": "^4.12.0",
