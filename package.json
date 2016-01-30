@@ -5,10 +5,10 @@
   "dependencies": {
     "angular": "^1.3.14",
     "express": "^4.12.0",
-    "faker": "^2.1.2",
+    "faker": "^3.0.1",
     "gulp": "^3.8.11",
     "gulp-livereload": "^3.8.0",
-    "gulp-noprotocol": "^0.5.2",
+    "gulp-noprotocol": "^0.7.1",
     "jquery": "^2.1.3"
   },
   "repository": {
@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/bfanger/angular-keyboard",
   "scripts": {
+    "setup": "npm install",
     "start": "node minisite/app.js",
     "postinstall": "node node_modules/.bin/gulp build"
   },

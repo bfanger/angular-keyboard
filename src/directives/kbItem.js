@@ -133,11 +133,16 @@ angular.module('keyboard').directive('kbItem', function (KbItemController, $anim
                             angular.element(kbContainer._element).scope().$eval(kbContainer.attrs[trigger], { $event: e});
                         }
                     }
-                } else if (e.which === 32 || e.which === 13) { // Space || Enter
+                    if (changed) {
+                        e.preventDefault(); // prevent viewport movement
+                    }
+                } else if (e.which === 32) { // Space
+                    e.preventDefault(); // prevent viewport movement
+                    invoke = true;
+                } else if (e.which === 13) { // Enter
                     invoke = true;
                 }
                 if (changed || invoke) {
-                    e.preventDefault();
                     if (invoke) {
                         kbContainer.invoke(kbItem);
                         if (attrs.kbInvoke) {
