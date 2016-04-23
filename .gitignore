@@ -1,2 +1,3 @@
-node_modules
-bower-angular-keyboard
+/node_modules
+/dist
+/typings

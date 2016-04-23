@@ -1,0 +1,11 @@
+{
+  "name": "angular-keyboard",
+  "version": false,
+  "dependencies": {
+    "gulp": "registry:npm/gulp#3.8.0+20160211003958"
+  },
+  "ambientDependencies": {
+    "angular": "registry:dt/angular#1.5.0+20160412133217",
+    "node": "registry:dt/node#4.0.0+20160412142033"
+  }
+}

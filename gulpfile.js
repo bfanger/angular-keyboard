@@ -1,4 +1,3 @@
-'use strict';
 var gulp = require('gulp');
 var noprotocol = require('gulp-noprotocol');
 var livereload = require('gulp-livereload');
@@ -12,7 +11,7 @@ gulp.task('build', function () {
         .pipe(noprotocol.angular({
             bundle: 'keyboard.min.js'
         }))
-        .pipe(gulp.dest('bower-angular-keyboard/'));
+        .pipe(gulp.dest('dist/'));
 
     gulp
         .src(['src/keyboard.module.js', 'src/**/*.js'])
@@ -20,7 +19,7 @@ gulp.task('build', function () {
             bundle: 'keyboard.js',
             minify: false
         }))
-        .pipe(gulp.dest('bower-angular-keyboard/'));
+        .pipe(gulp.dest('dist/'));
 });
 /**
  * Watch for file-changes, start a livereload server and rebuild on every change.
@@ -28,7 +27,7 @@ gulp.task('build', function () {
 gulp.task('watch', ['build'], function () {
     livereload.listen();
     gulp.watch('src/**/*.js', ['build']);
-    gulp.watch(['bower-angular-keyboard/*.js', 'minisite/**/*.html']).on('change', livereload.changed);
+    gulp.watch(['dist/*.js', 'demos/**/*.html']).on('change', livereload.changed);
 });
 
 gulp.task('default', ['build']);
