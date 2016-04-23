@@ -19,6 +19,12 @@ Keyboard behavior for AngularJS Webapps.
 
 ## Installation
 
+### npm
+
+```shell
+npm install angular-keyboard --save
+```
+
 ### bower
 
 ```shell
