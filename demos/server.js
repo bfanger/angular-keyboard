@@ -9,7 +9,7 @@ app.use('/js/angular/', express.static(__dirname + '/../node_modules/angular'));
 app.use('/js/jquery/', express.static(__dirname + '/../node_modules/jquery/dist'));
 app.use('/js/faker/', express.static(__dirname + '/../node_modules/faker/build/build'));
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8080;
 app.listen(port, function () {
     console.log('demo-server started on port', port);
 });

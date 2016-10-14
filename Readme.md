@@ -12,10 +12,10 @@ Keyboard behavior for AngularJS Webapps.
 
 ## Demos
 
-* [kbList & kbSelect demo](http://angular-keyboard.herokuapp.com/example-modes.html)
-* [Scroll and orientation demo](http://angular-keyboard.herokuapp.com/example-orientation.html)
-* [kbFocus demo](http://angular-keyboard.herokuapp.com/example-focus.html)
-* [kbInvoke demo](http://angular-keyboard.herokuapp.com/example-menu.html)
+* [kbList & kbSelect demo](https://angular-keyboard.herokuapp.com/example-modes.html)
+* [Scroll and orientation demo](https://angular-keyboard.herokuapp.com/example-orientation.html)
+* [kbFocus demo](https://angular-keyboard.herokuapp.com/example-focus.html)
+* [kbInvoke demo](https://angular-keyboard.herokuapp.com/example-menu.html)
 
 ## Installation
 
@@ -116,7 +116,7 @@ An event handler for `kb-item`. Triggered when clicked or (when focused) with sp
 
 ## Development
 
-* Install [node.js](http://nodejs.org/)
+* Install [node.js](https://nodejs.org/)
 * Install gulp: `npm install -g bower gulp`
 * Install dependencies: `npm install` in the repository directory.
 * `gulp build` to build
