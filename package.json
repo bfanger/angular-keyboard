@@ -2,7 +2,7 @@
   "name": "angular-keyboard",
   "description": "Keyboard behavior for AngularJS Webapps",
   "license": "MIT",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "main": "dist/keyboard.js",
   "devDependencies": {
     "angular": "^1.*",
