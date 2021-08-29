@@ -1,79 +1,104 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>kb-invoke demo - Angular Keyboard</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://bootswatch.com/sandstone/bootstrap.css">
-    </head>
-    <body ng-app="demo" ng-strict-di>
-        <div class="container">
-            <h1>Angular Keyboard: kb-invoke</h1>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="dropdown" ng-class="{open: menu.opened}">
-                        <button class="btn btn-info" ng-click="toggleMenu()" >
-                            Dropdown
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" kb-list>
-                            <li><a kb-item kb-focus="first-item" kb-invoke="log($event)">Action</a></li>
-                            <li><a kb-item kb-invoke="log($event)">Another action</a></li>
-                            <li><a kb-item kb-invoke="log($event)">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li><a kb-item kb-invoke="log($event)" href="https://angularjs.org" target="angular">angularjs.org</a></li>
-                        </ul>
-                    </div>
-                    <div class="text-muted" style="margin-top: 200px">
-                        Thanks to <a href="https://bootswatch.com/" target="_blank">bootswatch.com</a> for the 'sandstone' bootstrap theme.
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <h2>Log</h2>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Item</th>
-                                <th>Event</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="message in messages">
-                                <td>{{message.datetime.getHours()}}:{{message.datetime.getMinutes()}}:{{message.datetime.getSeconds()}}</td>
-                                <td>{{message.item}}</td>
-                                <td>Invoked via {{message.event}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <head>
+    <title>kb-invoke demo - Angular Keyboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/sandstone/bootstrap.css"
+    />
+  </head>
+  <body ng-app="demo" ng-strict-di>
+    <div class="container">
+      <h1>Angular Keyboard: kb-invoke</h1>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="dropdown" ng-class="{open: menu.opened}">
+            <button class="btn btn-info" ng-click="toggleMenu()">
+              Dropdown
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" kb-list>
+              <li>
+                <a kb-item kb-focus="first-item" kb-invoke="log($event)"
+                  >Action</a
+                >
+              </li>
+              <li><a kb-item kb-invoke="log($event)">Another action</a></li>
+              <li>
+                <a kb-item kb-invoke="log($event)">Something else here</a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a
+                  kb-item
+                  kb-invoke="log($event)"
+                  href="https://angularjs.org"
+                  target="angular"
+                  >angularjs.org</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="text-muted" style="margin-top: 200px">
+            Thanks to
+            <a href="https://bootswatch.com/" target="_blank">bootswatch.com</a>
+            for the 'sandstone' bootstrap theme.
+          </div>
         </div>
+        <div class="col-sm-6">
+          <h2>Log</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Item</th>
+                <th>Event</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="message in messages">
+                <td>
+                  {{message.datetime.getHours()}}:{{message.datetime.getMinutes()}}:{{message.datetime.getSeconds()}}
+                </td>
+                <td>{{message.item}}</td>
+                <td>Invoked via {{message.event}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-        <script src="js/angular/angular.min.js"></script>
-        <script src="js/angular-keyboard/keyboard.js"></script>
-        <script>
-            var demo = angular.module('demo', ['keyboard']);
-            demo.run(['$rootScope', 'kbFocus', function ($rootScope, kbFocus) {
-                $rootScope.messages = [];
-                $rootScope.menu = {};
-                $rootScope.toggleMenu = function () {
-                    if ($rootScope.menu.opened) {
-                        $rootScope.menu.opened = false;
-                    } else {
-                        $rootScope.menu.opened = true;
-                        kbFocus("first-item");
-                    }
-                };
-                $rootScope.log = function (event) {
-                    $rootScope.messages.push({
-                        event: event.type,
-                        item: event.target.innerHTML,
-                        datetime: new Date()
-                    });
-                };
-//                $rootScope.toggleMenu();
-            }]);
-        </script>
-    </body>
+    <script src="js/angular/angular.min.js"></script>
+    <script src="js/angular-keyboard/keyboard.js"></script>
+    <script>
+      var demo = angular.module("demo", ["keyboard"]);
+      demo.run([
+        "$rootScope",
+        "kbFocus",
+        function ($rootScope, kbFocus) {
+          $rootScope.messages = [];
+          $rootScope.menu = {};
+          $rootScope.toggleMenu = function () {
+            if ($rootScope.menu.opened) {
+              $rootScope.menu.opened = false;
+            } else {
+              $rootScope.menu.opened = true;
+              kbFocus("first-item");
+            }
+          };
+          $rootScope.log = function (event) {
+            $rootScope.messages.push({
+              event: event.type,
+              item: event.target.innerHTML,
+              datetime: new Date(),
+            });
+          };
+          //                $rootScope.toggleMenu();
+        },
+      ]);
+    </script>
+  </body>
 </html>

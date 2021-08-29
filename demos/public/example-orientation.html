@@ -1,117 +1,154 @@
 <!DOCTYPE html>
 <html ng-app="demo" ng-strict-di>
-    <head>
-        <title>Scroll and orientation - Angular Keyboard</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-        <style>
-            body {
-                font-family: Open Sans, sans-serif;
-                background: black;
-                color: white;
-                width: 600px;
-                margin: 30px auto;
-                padding: 0 100px;
-            }
-            a {
-                color: rgb(212,14,136);
-            }
-            [kb-item] {
-                cursor: pointer;
-            }
-            ::selection {
-                background-color: #5729c1;
-                color: #ffffff;
-            }
-            h1 {
-                font-weight: normal;
-            }
-            h4 {
-                font-size: 11pt;
-                font-weight: normal;
-                line-height: 1.3636;
-                margin: 0;
-            }
-            .list {
-                padding: 2px;
-            }
-            .list__item {
-                background: #1d1d1d;
-                padding: 5.09375px;
-                margin-top: 10px;
-                overflow: hidden; /* clearfix */
-            }
-            .list__item:hover {
-                outline: rgba(255, 255, 255, 0.3) solid 3px;
-                background:  rgba(255, 255, 255, 0.3);
-            }
-            .list__item:focus {
-                outline: 2px solid white;
-            }
-            .list__item.kb-active {
-                background: #5729c1;
-            }
-            .list__item__avatar {
-                width: 60px;
-                height: 60px;
-                float: left;
-                margin-right: 10px;
-            }
-            .list--vertical {
-                height: 320px;
-                overflow-y: scroll;
-            }
-            .list--horizontal {
-                width: 600px;
-                overflow-x: scroll;
-                white-space: nowrap;
-            }
-            .list--horizontal  .list__item {
-                width: 200px;
-                display: inline-block;
-                margin-right: 20px;
-            }
-        </style>
+  <head>
+    <title>Scroll and orientation - Angular Keyboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style>
+      body {
+        font-family: Open Sans, sans-serif;
+        background: black;
+        color: white;
+        width: 600px;
+        margin: 30px auto;
+        padding: 0 100px;
+      }
+      a {
+        color: rgb(212, 14, 136);
+      }
+      [kb-item] {
+        cursor: pointer;
+      }
+      ::selection {
+        background-color: #5729c1;
+        color: #ffffff;
+      }
+      h1 {
+        font-weight: normal;
+      }
+      h4 {
+        font-size: 11pt;
+        font-weight: normal;
+        line-height: 1.3636;
+        margin: 0;
+      }
+      .list {
+        padding: 2px;
+      }
+      .list__item {
+        background: #1d1d1d;
+        padding: 5.09375px;
+        margin-top: 10px;
+        overflow: hidden; /* clearfix */
+      }
+      .list__item:hover {
+        outline: rgba(255, 255, 255, 0.3) solid 3px;
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .list__item:focus {
+        outline: 2px solid white;
+      }
+      .list__item.kb-active {
+        background: #5729c1;
+      }
+      .list__item__avatar {
+        width: 60px;
+        height: 60px;
+        float: left;
+        margin-right: 10px;
+      }
+      .list--vertical {
+        height: 320px;
+        overflow-y: scroll;
+      }
+      .list--horizontal {
+        width: 600px;
+        overflow-x: scroll;
+        white-space: nowrap;
+      }
+      .list--horizontal .list__item {
+        width: 200px;
+        display: inline-block;
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Angular Keyboard: Scroll and orientation</h1>
+    Orientation:
+    <label
+      ><input
+        type="radio"
+        name="orientation"
+        ng-model="list.orientation"
+        value="vertical"
+      />
+      Vertical</label
+    >
+    <label
+      ><input
+        type="radio"
+        name="orientation"
+        ng-model="list.orientation"
+        value="horizontal"
+      />
+      Horizontal</label
+    >
+    <div
+      kb-list
+      ng-model="list.selection"
+      class="list"
+      ng-class="['list--' + list.orientation]"
+    >
+      <div
+        kb-item="item"
+        ng-repeat="item in items track by item.id"
+        class="list__item"
+      >
+        <img class="list__item__avatar" ng-src="{{item.avatar}}" />
+        <h4>{{item.name}}</h4>
+      </div>
+    </div>
+    <p>
+      Thanks to
+      <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a>
+      for the generated names and
+      <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the
+      ui-dark theme.
+    </p>
 
-    </head>
-    <body>
-        <h1>Angular Keyboard: Scroll and orientation</h1>
-        Orientation: <label><input type="radio" name="orientation" ng-model="list.orientation" value="vertical"> Vertical</label>
-        <label><input type="radio" name="orientation" ng-model="list.orientation" value="horizontal"> Horizontal</label>
-        <div kb-list ng-model="list.selection" class="list" ng-class="['list--' + list.orientation]">
-            <div kb-item="item" ng-repeat="item in items track by item.id" class="list__item">
-                <img class="list__item__avatar" ng-src="{{item.avatar}}">
-                <h4>{{item.name}}</h4>
-            </div>
-        </div>
-        <p>
-            Thanks to <a href="https://github.com/marak/faker.js/" target="_blank">Faker.js</a> for the generated names and <a href="http://try.buildwinjs.com/" target="_blank">WinJS</a> for the ui-dark theme.
-        </p>
-
-        <script src="js/faker/faker.min.js"></script>
-        <script src="js/jquery/jquery.min.js"></script>
-        <script src="js/angular/angular.min.js"></script>
-        <script src="js/angular-keyboard/keyboard.js"></script>
-        <script>
-            var demo = angular.module('demo', ['keyboard']);
-            demo.run(['$rootScope', '$timeout', function ($rootScope, $timeout) {
-                var items = [];
-                for (var i = 0; i < 30; i++) {
-                    items.push({
-                        id: i + 1,
-                        avatar: faker.image.avatar(),
-                        name: faker.name.findName()
-                    });
-                }
-                $rootScope.items = items;
-                $rootScope.list = {
-//                    selection: items[2],
-                    orientation: 'vertical'
-                };
-                $timeout(function () {
-                    document.querySelector('[kb-list]').focus();
-                }, 100);
-            }]);
-        </script>
-    </body>
+    <script src="https://cdn.jsdelivr.net/npm/faker@5.5.3/dist/faker.min.js"></script>
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/angular/angular.min.js"></script>
+    <script src="js/angular-keyboard/keyboard.js"></script>
+    <script>
+      var demo = angular.module("demo", ["keyboard"]);
+      demo.run([
+        "$rootScope",
+        "$timeout",
+        function ($rootScope, $timeout) {
+          var items = [];
+          for (var i = 0; i < 30; i++) {
+            items.push({
+              id: i + 1,
+              avatar: faker.image.avatar(),
+              name: faker.name.findName(),
+            });
+          }
+          $rootScope.items = items;
+          $rootScope.list = {
+            //                    selection: items[2],
+            orientation: "vertical",
+          };
+          $timeout(function () {
+            document.querySelector("[kb-list]").focus();
+          }, 100);
+        },
+      ]);
+    </script>
+  </body>
 </html>
